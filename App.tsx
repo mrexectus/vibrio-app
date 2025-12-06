@@ -94,9 +94,9 @@ const App: React.FC = () => {
   }, [status]);
 
   const handleSubmit = async () => {
-    if(!inputText || !userZodiac || !partnerZodiac || !relStatus) { setErrorMsg("Lütfen tüm alanları doldurunuz."); return; }
+    // ZORUNLULUK KALDIRILDI: Sadece metin veya resim varsa analiz başlar.
+    if(!inputText && !imageFile) { setErrorMsg("Lütfen analiz için bir metin yazın veya fotoğraf yükleyin."); return; }
     
-    // Check for API Key presence before starting
     const apiKey = (import.meta as any).env?.VITE_GOOGLE_API_KEY || (process as any).env?.API_KEY || (process as any).env?.VITE_GOOGLE_API_KEY;
     if (!apiKey) {
       setErrorMsg("Sistem Hatası: API Anahtarı bulunamadı. Lütfen kurulumu kontrol edin.");
@@ -239,7 +239,13 @@ const App: React.FC = () => {
 
                      {errorMsg && <p className="text-xs text-red-500 text-center bg-red-50 p-2 rounded-lg">{errorMsg}</p>}
                      
-                     <button onClick={handleSubmit} disabled={!inputText || !userZodiac || !partnerZodiac || !relStatus} className="w-full py-4 bg-chic-deep text-white font-sans font-bold text-xs tracking-[0.25em] uppercase rounded-xl shadow-lg hover:shadow-xl hover:bg-chic-deep/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed mt-2">Analizi Başlat</button>
+                     <button 
+                        onClick={handleSubmit} 
+                        disabled={(!inputText && !imageFile)} 
+                        className="w-full py-4 bg-chic-deep text-white font-sans font-bold text-xs tracking-[0.25em] uppercase rounded-xl shadow-lg hover:shadow-xl hover:bg-chic-deep/90 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed mt-2"
+                     >
+                        Analizi Başlat
+                     </button>
                   </div>
                </div>
                <div className="md:hidden mt-6 px-4 animate-fadeIn pb-24"><PremiumBenefits /></div>
