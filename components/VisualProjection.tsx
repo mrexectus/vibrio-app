@@ -1,10 +1,8 @@
 
 import React from 'react';
 
-// ENV VARS for Vite and Node
-const SHOPIER_LINK = (import.meta as any).env?.VITE_SHOPIER_PRODUCT_LINK || 
-                     (process as any).env?.VITE_SHOPIER_PRODUCT_LINK || 
-                     "https://www.shopier.com/ShowProductNew/products.php?id=DEMO"; 
+// HARDCODED SHOPIER LINK AS REQUESTED BY USER
+const SHOPIER_LINK = "https://www.shopier.com/vibrio/41893014"; 
 
 interface VisualProjectionProps {
   description?: string;
@@ -44,14 +42,12 @@ const VisualProjection: React.FC<VisualProjectionProps> = ({ description, isUnlo
                 <p className="text-white/80 text-xs font-light max-w-[200px] leading-relaxed">
                     Yapay zeka; yüz hatlarınızı ve yaşlanma genetiğinizi analiz ederek gelecekteki görüntünüzü oluşturdu.
                 </p>
-                <a 
-                  href={SHOPIER_LINK}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-4 px-6 py-2 bg-chic-primary hover:bg-white hover:text-chic-primary transition-colors text-white rounded-full text-[10px] uppercase tracking-widest font-bold shadow-lg cursor-pointer"
+                <button 
+                  onClick={() => window.open(SHOPIER_LINK, '_blank')}
+                  className="mt-4 px-6 py-2 bg-chic-primary hover:bg-white hover:text-chic-primary transition-colors text-white rounded-full text-[10px] uppercase tracking-widest font-bold shadow-lg cursor-pointer relative z-50 pointer-events-auto"
                 >
                     Kilidi Kaldır ve Gör
-                </a>
+                </button>
             </div>
         )}
 

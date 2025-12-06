@@ -1,13 +1,12 @@
+
 import React, { useState } from 'react';
 
 interface PaywallProps {
   onUnlock: () => void;
 }
 
-// ENV VARS for Vite and Node
-const SHOPIER_LINK = (import.meta as any).env?.VITE_SHOPIER_PRODUCT_LINK || 
-                     (process as any).env?.VITE_SHOPIER_PRODUCT_LINK || 
-                     "https://www.shopier.com/ShowProductNew/products.php?id=DEMO"; 
+// HARDCODED SHOPIER LINK AS REQUESTED BY USER
+const SHOPIER_LINK = "https://www.shopier.com/vibrio/41893014"; 
 
 const Paywall: React.FC<PaywallProps> = ({ onUnlock }) => {
   const [adminClicks, setAdminClicks] = useState(0);

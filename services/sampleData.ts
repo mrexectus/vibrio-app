@@ -1,119 +1,137 @@
 
 export const sampleReportContent = `
-<div class="space-y-8 font-sans">
+<div class="space-y-8 font-sans text-chic-deep">
   
-  <!-- HEADER: CLINICAL SUMMARY -->
-  <div class="flex flex-col md:flex-row gap-4 mb-6">
-      <div class="flex-1 bg-chic-deep/5 p-4 rounded-xl border border-chic-deep/10">
-          <span class="text-[9px] uppercase tracking-widest text-chic-accent font-bold">Analiz Kimliği</span>
-          <div class="text-lg font-serif text-chic-deep">#VIB-2025-X92</div>
-          <div class="text-xs text-chic-text mt-1">Selin (Yengeç) & Mert (Oğlak)</div>
+  <!-- HEADER -->
+  <div class="flex flex-col md:flex-row gap-4 mb-6 border-b border-chic-primary/20 pb-6">
+      <div class="flex-1">
+          <div class="text-[10px] uppercase tracking-[0.2em] text-chic-accent font-bold mb-1">Analiz Dosyası</div>
+          <div class="text-2xl font-serif text-chic-deep">#VIB-2025-X92</div>
+          <div class="text-xs text-chic-text mt-1 font-medium">Selin (Yengeç) & Mert (Oğlak)</div>
       </div>
-      <div class="flex-1 bg-green-50 p-4 rounded-xl border border-green-100">
-          <span class="text-[9px] uppercase tracking-widest text-green-600 font-bold">İlişki Sağlığı</span>
-          <div class="text-lg font-serif text-green-800">%82 - Yüksek Potansiyel</div>
-          <div class="w-full h-1.5 bg-green-200 rounded-full mt-2"><div class="w-[82%] h-full bg-green-500 rounded-full"></div></div>
+      <div class="flex-1 flex flex-col items-end justify-center">
+          <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-1">
+            Yüksek Uyum (%82)
+          </div>
+          <div class="text-[9px] text-gray-400">Rapor Tarihi: 06.12.2025</div>
       </div>
   </div>
 
-  <!-- SECTION 1: TIME TRAVEL & GENETICS (THE VISUALS) -->
-  <div class="bg-white p-5 rounded-2xl border border-chic-primary/20 shadow-sm relative overflow-hidden">
+  <!-- VISUAL SIMULATION SECTION (The Hook) -->
+  <div class="bg-white p-6 rounded-2xl border border-chic-primary/20 shadow-sm relative overflow-hidden">
      <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-chic-primary via-chic-secondary to-chic-primary"></div>
      
-     <h3 class="font-serif text-xl text-chic-deep mb-4 flex items-center gap-2">
+     <h3 class="font-serif text-xl text-chic-deep mb-6 flex items-center gap-2">
         <span class="text-2xl">🧬</span> 
-        <span class="italic">Vibrio AI Vision: Zaman Yolculuğu & Genetik</span>
+        <span class="italic">Vibrio AI Vision: Zaman Yolculuğu</span>
      </h3>
      
-     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
         
-        <!-- CARD 1: TODAY -->
-        <div class="group relative rounded-xl overflow-hidden aspect-[4/5] border border-gray-100 shadow-inner">
-            <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover" alt="Couple Today">
-            <div class="absolute bottom-0 w-full bg-black/60 backdrop-blur-sm p-2 text-center">
-                <span class="text-[10px] text-white uppercase tracking-widest font-bold">2025 (Güncel)</span>
+        <!-- 1. GÜNCEL HAL -->
+        <div class="space-y-2">
+            <div class="aspect-[3/4] rounded-xl overflow-hidden relative shadow-inner border border-gray-100">
+                <img src="https://images.unsplash.com/photo-1621784563330-caee0b138a00?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover" alt="Genç Çift">
+                <div class="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-white text-[8px] font-bold tracking-widest uppercase">
+                    2025 (Bugün)
+                </div>
             </div>
         </div>
 
-        <!-- CARD 2: +20 YEARS -->
-        <div class="group relative rounded-xl overflow-hidden aspect-[4/5] border-2 border-chic-primary/30 shadow-md">
-            <div class="absolute top-2 right-2 bg-chic-primary text-white text-[8px] px-2 py-0.5 rounded-full z-10 font-bold tracking-widest">AI SIMULATION</div>
-            <img src="https://images.unsplash.com/photo-1526662097394-84aeeb13a302?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover sepia-[.10]" alt="Couple Aged">
-            <div class="absolute bottom-0 w-full bg-chic-deep/90 backdrop-blur-sm p-2 text-center">
-                <span class="text-[10px] text-white uppercase tracking-widest font-bold">2045 (20 Yıl Sonra)</span>
+        <!-- 2. YAŞLANDIRILMIŞ HAL (AI Simulation) -->
+        <div class="space-y-2">
+            <div class="aspect-[3/4] rounded-xl overflow-hidden relative shadow-md border-2 border-chic-primary/30">
+                <div class="absolute top-2 right-2 bg-chic-primary text-white text-[8px] px-2 py-0.5 rounded-full z-10 font-bold tracking-widest shadow-sm">AI SİMÜLASYON</div>
+                <img src="https://images.unsplash.com/photo-1501820488136-72669149e0d4?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover sepia-[0.15] contrast-110" alt="Yaşlı Çift">
+                <div class="absolute bottom-2 left-2 bg-chic-deep/90 backdrop-blur-md px-2 py-1 rounded text-white text-[8px] font-bold tracking-widest uppercase">
+                    2045 (Gelecek)
+                </div>
             </div>
         </div>
 
-        <!-- CARD 3: FUTURE BABY -->
-        <div class="group relative rounded-xl overflow-hidden aspect-[4/5] border border-blue-100 shadow-inner">
-             <div class="absolute top-2 right-2 bg-blue-400 text-white text-[8px] px-2 py-0.5 rounded-full z-10 font-bold tracking-widest">GENETİK TAHMİN</div>
-            <img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover" alt="Future Baby">
-            <div class="absolute bottom-0 w-full bg-blue-900/80 backdrop-blur-sm p-2 text-center">
-                <span class="text-[10px] text-white uppercase tracking-widest font-bold">Muhtemel Çocuk</span>
+        <!-- 3. BEBEK TAHMİNİ (Genetic) -->
+        <div class="col-span-2 md:col-span-1 space-y-2">
+            <div class="aspect-[3/4] md:aspect-[3/4] h-full rounded-xl overflow-hidden relative shadow-inner border border-blue-100 bg-blue-50/50">
+                <div class="absolute top-2 right-2 bg-blue-400 text-white text-[8px] px-2 py-0.5 rounded-full z-10 font-bold tracking-widest shadow-sm">GENETİK TAHMİN</div>
+                <img src="https://images.unsplash.com/photo-1544126566-475dd3543d6c?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover" alt="Bebek">
+                <div class="absolute bottom-2 left-2 bg-blue-900/80 backdrop-blur-md px-2 py-1 rounded text-white text-[8px] font-bold tracking-widest uppercase">
+                    Muhtemel Çocuk
+                </div>
             </div>
         </div>
+
      </div>
-     
-     <p class="text-[10px] text-center text-gray-400 mt-3 italic">
-        *Simülasyonlar; yüz hatlarınız, ten renginiz ve baskın genleriniz analiz edilerek oluşturulmuştur.
-     </p>
+     <p class="text-[9px] text-gray-400 mt-3 text-center italic">*Bu görseller yapay zeka tarafından biyometrik veri analizi ile oluşturulmuştur.</p>
   </div>
 
-  <!-- SECTION 2: CLINICAL METRICS -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      <!-- SWOT ANALYSIS -->
-      <div class="bg-chic-bg/30 p-5 rounded-xl border border-chic-primary/10">
-          <h4 class="text-sm font-bold text-chic-deep uppercase tracking-widest mb-4 border-b border-chic-primary/20 pb-2">İlişki SWOT Analizi</h4>
-          <div class="grid grid-cols-2 gap-3">
-              <div class="bg-white p-3 rounded-lg shadow-sm">
-                  <span class="text-[9px] text-green-600 font-bold block mb-1">GÜÇLÜ YÖNLER</span>
-                  <p class="text-xs text-chic-text">Yüksek cinsel çekim, ortak mizah anlayışı.</p>
-              </div>
-              <div class="bg-white p-3 rounded-lg shadow-sm">
-                  <span class="text-[9px] text-red-500 font-bold block mb-1">ZAYIF YÖNLER</span>
-                  <p class="text-xs text-chic-text">Kriz anında iletişimi kesme (Stonewalling).</p>
-              </div>
-              <div class="bg-white p-3 rounded-lg shadow-sm">
-                  <span class="text-[9px] text-blue-500 font-bold block mb-1">FIRSATLAR</span>
-                  <p class="text-xs text-chic-text">Finansal güç birliği ve ortak hedefler.</p>
-              </div>
-              <div class="bg-white p-3 rounded-lg shadow-sm">
-                  <span class="text-[9px] text-orange-500 font-bold block mb-1">TEHDİTLER</span>
-                  <p class="text-xs text-chic-text">Ailelerin ilişkiye aşırı müdahalesi.</p>
-              </div>
+  <!-- CLINICAL METRICS GRID -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- KUTU 1: İLİŞKİ DİNAMİĞİ -->
+      <div class="bg-chic-bg p-5 rounded-xl border border-chic-primary/10">
+          <h4 class="text-xs font-bold text-chic-deep uppercase tracking-widest mb-4 flex items-center gap-2">
+            <span class="text-lg">⚖️</span> İlişki Dengesi
+          </h4>
+          <div class="space-y-4">
+            <div>
+                <div class="flex justify-between text-[10px] uppercase font-bold text-chic-text mb-1">
+                    <span>Tutku & Çekim</span> <span>94% (Çok Yüksek)</span>
+                </div>
+                <div class="w-full bg-white h-2 rounded-full overflow-hidden border border-chic-primary/10">
+                    <div class="h-full bg-gradient-to-r from-red-300 to-red-500 w-[94%]"></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex justify-between text-[10px] uppercase font-bold text-chic-text mb-1">
+                    <span>İletişim Kalitesi</span> <span>68% (Riskli)</span>
+                </div>
+                <div class="w-full bg-white h-2 rounded-full overflow-hidden border border-chic-primary/10">
+                    <div class="h-full bg-gradient-to-r from-yellow-300 to-yellow-500 w-[68%]"></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex justify-between text-[10px] uppercase font-bold text-chic-text mb-1">
+                    <span>Gelecek Hedefleri</span> <span>88% (Uyumlu)</span>
+                </div>
+                <div class="w-full bg-white h-2 rounded-full overflow-hidden border border-chic-primary/10">
+                    <div class="h-full bg-gradient-to-r from-green-300 to-green-500 w-[88%]"></div>
+                </div>
+            </div>
           </div>
       </div>
 
-      <!-- COMPATIBILITY BARS -->
-      <div class="bg-white p-5 rounded-xl border border-chic-primary/10 flex flex-col justify-center">
-         <h4 class="text-sm font-bold text-chic-deep uppercase tracking-widest mb-4 border-b border-chic-primary/20 pb-2">Uyum Göstergeleri</h4>
-         
-         <div class="space-y-4">
-            <div>
-                <div class="flex justify-between text-xs font-medium mb-1"><span>Tensel Uyum (Libido)</span><span>94%</span></div>
-                <div class="w-full bg-gray-100 rounded-full h-2"><div class="bg-red-400 h-2 rounded-full" style="width: 94%"></div></div>
-            </div>
-            <div>
-                <div class="flex justify-between text-xs font-medium mb-1"><span>Zihinsel Bağ</span><span>68%</span></div>
-                <div class="w-full bg-gray-100 rounded-full h-2"><div class="bg-blue-400 h-2 rounded-full" style="width: 68%"></div></div>
-            </div>
-            <div>
-                <div class="flex justify-between text-xs font-medium mb-1"><span>Duygusal Güven</span><span>75%</span></div>
-                <div class="w-full bg-gray-100 rounded-full h-2"><div class="bg-green-400 h-2 rounded-full" style="width: 75%"></div></div>
-            </div>
-         </div>
+      <!-- KUTU 2: TEŞHİS KARTI -->
+      <div class="bg-white p-5 rounded-xl border-l-4 border-chic-accent shadow-sm">
+          <h4 class="text-xs font-bold text-chic-accent uppercase tracking-widest mb-3">Klinik Teşhis</h4>
+          <div class="space-y-3">
+              <div class="flex gap-2 items-start">
+                  <span class="text-lg leading-none">🚩</span>
+                  <div>
+                      <span class="text-[10px] font-bold text-chic-deep block">RİSK FAKTÖRÜ</span>
+                      <p class="text-xs text-chic-text leading-snug">Partnerin (Oğlak) iş odaklı yapısı, senin (Yengeç) duygusal ihtiyaçlarını "gereksiz drama" olarak etiketleyebilir.</p>
+                  </div>
+              </div>
+              <div class="flex gap-2 items-start">
+                  <span class="text-lg leading-none">💊</span>
+                  <div>
+                      <span class="text-[10px] font-bold text-chic-deep block">TEDAVİ ÖNERİSİ</span>
+                      <p class="text-xs text-chic-text leading-snug">Haftada 1 kez "sorun konuşmama" randevusu. Sadece eğlence odaklı aktivite şart.</p>
+                  </div>
+              </div>
+          </div>
       </div>
   </div>
 
-  <!-- SECTION 3: TEXT ANALYSIS -->
-  <h3 class="font-serif text-2xl text-chic-deep mb-2 mt-6 italic">Klinik Değerlendirme</h3>
-  <div class="prose prose-sm max-w-none text-chic-text/80 text-justify">
-    <p>
-      Bu ilişki, klasik bir <strong>"Zıt Kutuplar"</strong> vakasıdır. Selin'in su grubu (Yengeç) hassasiyeti, Mert'in toprak grubu (Oğlak) katılığını yumuşatmak için orada. Mert'in zaman zaman gösterdiği mesafeli tavır (Soğukluk), aslında bir savunma mekanizmasıdır.
-    </p>
-    <p>
-      Gelecek simülasyonunda, özellikle 2027 yılı civarında ciddi bir "Kökleşme" (Evlilik/Çocuk) döngüsü görünüyor. Ancak o tarihe kadar Mert'in "eleştirilme korkusunu", Selin'in ise "terk edilme şemasını" iyileştirmesi şart. Aksi takdirde, yukarıdaki fotoğrafta gördüğünüz o mutlu yaşlı çift olmak yerine, birbirine yabancılaşmış iki ev arkadaşına dönüşme riskiniz var.
-    </p>
+  <!-- TEXT CONTENT -->
+  <div class="prose prose-sm max-w-none text-chic-text text-justify leading-relaxed">
+      <h4 class="font-serif text-lg text-chic-deep italic border-b border-chic-primary/20 pb-2 mb-3">Psikolojik Derinlik Analizi</h4>
+      <p>
+        Bu ilişkinin temel dinamiği <strong>"Tamamlayıcı Zıtlıklar"</strong> üzerine kurulu. Oğlak erkeğinin sağladığı güvenli ve stabil yapı (baba figürü arketipi), Yengeç kadınının aradığı "köklenme" ihtiyacını %100 karşılıyor. 
+      </p>
+      <p>
+        Ancak tehlike çanları <strong>"Sessiz Beklentiler"</strong> konusunda çalıyor. Mert, sevgisini "hizmet ederek" (senin için bir şeyler yaparak) gösterirken, sen "duymak ve dokunulmak" istiyorsun. Bu dil uyuşmazlığı çözülmezse, 3. yılın sonunda ciddi bir duygusal soğuma riski mevcut.
+      </p>
   </div>
+
 </div>
 `;
