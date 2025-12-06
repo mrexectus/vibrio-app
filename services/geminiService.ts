@@ -52,7 +52,7 @@ const responseSchema: Schema = {
       },
       required: ["trust", "passion", "communication", "attachment_style", "conflict_style"],
     },
-    future_visual_description: { type: Type.STRING, description: "A detailed physical description of the couple 20 years later." },
+    future_visual_description: { type: Type.STRING, description: "Physical description of couple 20 years later." },
     premium_report_content: { type: Type.STRING },
   },
   required: ["vibrio_score", "free_comment", "metrics", "premium_report_content"],
@@ -68,14 +68,16 @@ export const analyzeRelationship = async (
   
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
+  // Optimized System Instruction for Speed + Depth
   const systemInstruction = `
-    ROL: Sen "Vibrio", profesyonel bir İlişki Analistisin.
-    GÖREV: Kullanıcının metnini ve görselini analiz et.
+    Rol: "Vibrio" İlişki Analisti.
+    Görev: Metin/Görsel analizi.
     
-    ÇIKTI KURALLARI:
-    1. **DERİNLİK:** Cevaplar akademik derinlikte, psikolojik terimler (Jung, Gottman) içeren uzun paragraflar olmalı.
-    2. **HTML:** 'premium_report_content' alanı, şık HTML formatında olmalı (<h3 class="text-2xl font-serif text-chic-deep mt-4 mb-2">Başlık</h3>, <p>İçerik</p>).
-    3. **ANALİZ:** Bilinçaltı niyetler, manipülasyon sinyalleri ve gelecek projeksiyonu içermeli.
+    Kurallar:
+    1. DERİNLİK: Jungiyen ve Gottman terimleriyle akademik derinlikte yaz.
+    2. HTML: 'premium_report_content' şık HTML olmalı (<h3 class="text-xl font-serif text-chic-deep mt-4 mb-2"></h3>, <p></p>).
+    3. İÇERİK: Bilinçaltı, Manipülasyon, 20 Yıl Sonraki Gelecek.
+    4. NETLİK: Gereksiz uzatma, yoğun ve çarpıcı ol.
   `;
 
   const statusContext = relationshipStatus ? `İlişki: ${relationshipStatus}` : "";
@@ -85,11 +87,10 @@ export const analyzeRelationship = async (
   
   if (imageFile) {
     try {
-        // Use the new compression function
         const base64Data = await compressImage(imageFile);
         parts.unshift({ inlineData: { mimeType: 'image/jpeg', data: base64Data } });
     } catch (e) {
-        console.error("Image compression failed, skipping image", e);
+        console.error("Image compression failed", e);
     }
   }
 
@@ -100,7 +101,7 @@ export const analyzeRelationship = async (
       config: { 
         systemInstruction: systemInstruction,
         responseMimeType: "application/json", 
-        responseSchema: responseSchema 
+        responseSchema: responseSchema,
       },
     });
 
@@ -110,9 +111,9 @@ export const analyzeRelationship = async (
     return JSON.parse(jsonString);
   } catch (error: any) {
     console.error("Gemini Error:", error);
-    let errorMsg = "Analiz sırasında teknik bir hata oluştu. Lütfen tekrar deneyin.";
+    let errorMsg = "Analiz hatası.";
     if (error.message && (error.message.includes("API key") || error.message.includes("403"))) {
-        errorMsg = "Sistem Hatası: API Anahtarı eksik.";
+        errorMsg = "API Anahtarı hatası.";
     }
     throw new Error(errorMsg);
   }
