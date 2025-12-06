@@ -3,52 +3,54 @@ import React from 'react';
 interface VisualProjectionProps {
   description?: string;
   isUnlocked?: boolean;
+  userImage?: string | null;
 }
 
-const VisualProjection: React.FC<VisualProjectionProps> = ({ description, isUnlocked = false }) => {
+const VisualProjection: React.FC<VisualProjectionProps> = ({ description, isUnlocked = false, userImage }) => {
+  // Use user's uploaded image if available, otherwise a generic couple/future placeholder
+  const bgImage = userImage || 'https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=2670&auto=format&fit=crop';
+
   return (
-    <div className="w-full bg-white rounded-3xl p-6 shadow-sm border border-chic-primary/10 mt-6 relative overflow-hidden group">
-      <div className="flex items-center justify-between mb-4">
+    <div className="w-full bg-white rounded-3xl p-1 shadow-sm border border-chic-primary/10 mt-6 relative overflow-hidden group">
+      <div className="p-5 pb-2">
         <h3 className="text-sm font-bold uppercase tracking-widest text-chic-deep flex items-center gap-2">
-            <span>🔮</span> Gelecek Simülasyonu
+            <span>🔮</span> 20 Yıl Sonraki Haliniz
         </h3>
-        <span className="bg-chic-deep text-white text-[9px] px-2 py-1 rounded-full uppercase tracking-wider">
-            {isUnlocked ? 'Kilit Açıldı' : 'Premium'}
-        </span>
+        <p className="text-[10px] text-gray-400 mt-1">Yapay zeka simülasyonu tamamlandı.</p>
       </div>
 
-      <p className="text-xs text-chic-deep/70 mb-4 font-serif italic leading-relaxed">
-        {isUnlocked 
-            ? (description || "Yapay zeka analizi tamamlandı.") 
-            : "Yapay zeka; yüz hatlarınızı, enerji uyumunuzu ve genetik kodlarınızı analiz etti. 20 yıl sonraki haliniz (veya potansiyel çocuğunuz) oluşturuldu."}
-      </p>
-
       {/* Image Container */}
-      <div className="relative w-full aspect-[4/3] bg-chic-secondary/10 rounded-xl overflow-hidden shadow-inner border border-chic-primary/20">
+      <div className="relative w-full aspect-[4/3] bg-chic-secondary/10 rounded-2xl overflow-hidden mt-2">
         
-        {/* Placeholder Image - Always blurred heavily if locked */}
+        {/* Background Image - Heavily Blurred if Locked */}
         <div 
-            className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 transform ${isUnlocked ? 'blur-none scale-100' : 'blur-xl scale-110 grayscale-[0.5]'}`} 
-            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=2670&auto=format&fit=crop')" }}
+            className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 transform ${isUnlocked ? 'blur-none scale-100' : 'blur-2xl scale-110 grayscale-[0.2]'}`} 
+            style={{ backgroundImage: `url('${bgImage}')` }}
         ></div>
         
         {/* Locked Overlay */}
         {!isUnlocked && (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/30 backdrop-blur-[2px] p-4 text-center">
-                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-3 border border-white/40 shadow-xl animate-[pulse_3s_ease-in-out_infinite]">
-                    <span className="text-3xl">🔒</span>
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[1px] p-6 text-center">
+                <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center mb-4 border border-white/30 shadow-2xl animate-[pulse_3s_ease-in-out_infinite]">
+                    <span className="text-3xl drop-shadow-lg">🔒</span>
                 </div>
-                <h4 className="font-serif text-white text-lg font-medium tracking-wide drop-shadow-md">Görseli Görmek İçin Dokun</h4>
-                <div className="mt-3 px-3 py-1 bg-chic-primary/80 backdrop-blur-sm rounded-full text-[9px] text-white uppercase tracking-widest font-bold shadow-lg">
-                    Sadece Premium Üyeler
+                <h4 className="font-serif text-white text-xl font-medium tracking-wide drop-shadow-md mb-2">Görsel Hazır</h4>
+                <p className="text-white/80 text-xs font-light max-w-[200px] leading-relaxed">
+                    Yapay zeka; yüz hatlarınızı ve yaşlanma genetiğinizi analiz ederek gelecekteki görüntünüzü oluşturdu.
+                </p>
+                <div className="mt-4 px-4 py-1.5 bg-chic-primary text-white rounded-full text-[10px] uppercase tracking-widest font-bold shadow-lg">
+                    Kilidi Kaldır ve Gör
                 </div>
             </div>
         )}
 
-        {/* Unlocked Badge */}
+        {/* Text Description Overlay (Only when Unlocked) */}
         {isUnlocked && (
-            <div className="absolute bottom-3 right-3 bg-white/80 backdrop-blur px-3 py-1 rounded-full text-[9px] uppercase tracking-widest text-chic-deep border border-chic-primary/20 shadow-sm">
-                AI Generated
+            <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 pt-12">
+                 <p className="text-white text-sm font-serif italic leading-relaxed drop-shadow-md">
+                    "{description}"
+                 </p>
+                 <div className="mt-2 text-[9px] uppercase tracking-widest text-white/60">Vibrio AI Projection</div>
             </div>
         )}
       </div>

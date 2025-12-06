@@ -67,6 +67,7 @@ const App: React.FC = () => {
   const [partnerZodiac, setPartnerZodiac] = useState('');
   const [relStatus, setRelStatus] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isTextareaFocused, setIsTextareaFocused] = useState(false);
   const [status, setStatus] = useState<AnalysisStatus>(AnalysisStatus.IDLE);
@@ -93,6 +94,15 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => { if(isUnlocked) localStorage.setItem('vibrio_unlocked', 'true'); }, [isUnlocked]);
+
+  useEffect(() => {
+    if (imageFile) {
+        const url = URL.createObjectURL(imageFile);
+        setImagePreviewUrl(url);
+        return () => URL.revokeObjectURL(url);
+    }
+    setImagePreviewUrl(null);
+  }, [imageFile]);
 
   useEffect(() => {
     const names = ["Selin", "Ayşe", "Merve", "Elif", "Deniz"];
@@ -130,7 +140,7 @@ const App: React.FC = () => {
     } catch(e: any) { setErrorMsg(e.message); setStatus(AnalysisStatus.IDLE); }
   };
 
-  const reset = () => { localStorage.removeItem('vibrio_result'); setResult(null); setStatus(AnalysisStatus.IDLE); setInputText(''); setIsUnlocked(false); };
+  const reset = () => { localStorage.removeItem('vibrio_result'); setResult(null); setStatus(AnalysisStatus.IDLE); setInputText(''); setIsUnlocked(false); setImageFile(null); };
   const astroInsight = useMemo(() => getAstroInsight(userZodiac, partnerZodiac), [userZodiac, partnerZodiac]);
   const addEmoji = (emoji: string) => { setInputText(prev => prev + emoji); textareaRef.current?.focus(); };
 
@@ -168,9 +178,9 @@ const App: React.FC = () => {
           {status === AnalysisStatus.COMPLETED && (
             <button 
               onClick={reset} 
-              className="bg-chic-deep text-white hover:bg-chic-primary transition-all px-8 py-3 rounded-xl text-base font-bold tracking-widest shadow-xl flex items-center gap-2 transform hover:scale-105 active:scale-95 border border-white/10"
+              className="bg-chic-deep text-white hover:bg-chic-deep/80 transition-all px-8 py-2 rounded-full text-sm font-bold tracking-widest shadow-lg flex items-center gap-2 transform hover:scale-105 active:scale-95 border border-white/10"
             >
-              <span className="text-2xl leading-none font-light">+</span> YENİ ANALİZ
+              <span className="text-xl leading-none font-light mb-0.5">+</span> YENİ ANALİZ
             </button>
           )}
         </div>
@@ -281,9 +291,10 @@ const App: React.FC = () => {
                       <div className="flex gap-3">
                          <button 
                            onClick={() => fileInputRef.current?.click()} 
-                           className={`flex-1 py-3 rounded-xl border border-dashed flex items-center justify-center gap-2 transition-colors ${imageFile ? 'border-chic-success text-chic-success bg-chic-success/5' : 'border-chic-primary/40 text-chic-deep/50 hover:bg-chic-bg'}`}
+                           className={`flex-1 py-3 rounded-xl border border-dashed flex items-center justify-center gap-2 transition-colors relative overflow-hidden ${imageFile ? 'border-chic-success text-chic-success bg-chic-success/5' : 'border-chic-primary/40 text-chic-deep/50 hover:bg-chic-bg'}`}
                          >
-                           <span>{imageFile ? '📷 Fotoğraf Eklendi' : '📷 Ekran Görüntüsü / Fotoğraf Ekle'}</span>
+                            {imagePreviewUrl && <img src={imagePreviewUrl} alt="Preview" className="absolute inset-0 w-full h-full object-cover opacity-20" />}
+                           <span className="relative z-10 text-xs font-bold">{imageFile ? '📷 Fotoğraf Eklendi' : '📷 Fotoğraf Ekle'}</span>
                          </button>
                          <button 
                            onClick={handleSubmit} 
@@ -344,7 +355,7 @@ const App: React.FC = () => {
                    </div>
 
                    {/* Görsel Projeksiyon (Sneak Peek) */}
-                   <VisualProjection description={result.future_visual_description} isUnlocked={isUnlocked} />
+                   <VisualProjection description={result.future_visual_description} isUnlocked={isUnlocked} userImage={imagePreviewUrl} />
 
                    {/* Mobilde burada görünsün, kilidi açınca kaybolur */}
                    {isUnlocked && (
@@ -353,10 +364,10 @@ const App: React.FC = () => {
                      </button>
                    )}
                    
-                   {/* Mobile New Analysis Button */}
+                   {/* Mobile New Analysis Button - BIGGER AND BOLDER */}
                    <button 
                       onClick={reset}
-                      className="md:hidden w-full py-4 bg-chic-deep text-white font-bold rounded-xl uppercase text-xs tracking-widest hover:bg-chic-deep/90 shadow-lg mt-4"
+                      className="md:hidden w-full py-4 bg-chic-deep text-white font-bold rounded-2xl uppercase text-sm tracking-widest hover:bg-chic-deep/90 shadow-xl mt-4 border border-white/10"
                     >
                       + YENİ ANALİZ
                     </button>
@@ -365,21 +376,16 @@ const App: React.FC = () => {
                 {/* Sağ Panel: Premium Rapor & Paywall */}
                 <div className="md:col-span-8 relative min-h-[600px] flex flex-col">
                    
-                   {/* PAYWALL - Moved to TOP for maximum conversion */}
+                   {/* PAYWALL - CRITICAL: PLACED BEFORE CONTENT */}
                    {!isUnlocked && (
-                     <div className="z-30 mb-8 w-full sticky top-24">
+                     <div className="z-30 mb-8 w-full">
                        <Paywall onUnlock={() => setIsUnlocked(true)} />
                      </div>
                    )}
                    
-                   {/* Rapor İçeriği - Kilitliyken bulanık */}
-                   <div className={`relative transition-all duration-700 ${!isUnlocked ? 'h-[250px] overflow-hidden blur-sm opacity-50 select-none pointer-events-none' : 'opacity-100'}`}>
+                   {/* Rapor İçeriği - Kilitliyken bulanık ve aşağıda */}
+                   <div className={`relative transition-all duration-700 bg-white p-8 rounded-3xl border border-chic-primary/10 ${!isUnlocked ? 'h-[300px] overflow-hidden blur-md opacity-60 select-none pointer-events-none mt-4' : 'opacity-100'}`}>
                       <PremiumReport content={result.premium_report_content} />
-                      
-                      {/* Fade Effect for locked state */}
-                      {!isUnlocked && (
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-white z-10"></div>
-                      )}
                    </div>
                 </div>
              </div>

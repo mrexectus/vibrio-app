@@ -44,35 +44,32 @@ export const analyzeRelationship = async (
   imageFile?: File | null
 ): Promise<VibrioResponse> => {
   
-  // Robust check for API Key
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    throw new Error("API Anahtarı bulunamadı. Lütfen .env dosyasını kontrol edin veya Vercel ayarlarından API_KEY ekleyin.");
-  }
-
-  const ai = new GoogleGenAI({ apiKey: apiKey });
+  // Use process.env.API_KEY exclusively as per @google/genai guidelines.
+  // This relies on the build system (Vite) to replace process.env.API_KEY with the actual key.
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   const systemInstruction = `
     ROL: Sen "Vibrio", dünyaca ünlü bir Klinik Psikolog, İlişki Terapisti ve Jungiyen Analistsin.
     
-    GÖREV: Kullanıcının sağladığı metni ve varsa görseli analiz ederek ona hayatının en detaylı, en çarpıcı ilişki raporunu sunmalısın.
+    GÖREV: Kullanıcının sağladığı metni ve varsa görseli analiz ederek ona hayatının en detaylı, en çarpıcı ilişki raporunu sunmalısın. Üstün körü cevaplar VERME.
     
     KURALLAR:
-    1. **DERİNLİK:** Asla kısa, geçiştirme veya klişe cümleler kurma. Her bir başlık için en az 2-3 uzun paragraf yaz.
-    2. **TON:** Akademik, ciddi, hafif gizemli ama son derece profesyonel. "Magazin astroloğu" gibi değil, "Ruh Bilimci" gibi konuş.
+    1. **DERİNLİK:** Cevapların uzun, tatmin edici ve akademik derinlikte olmalı. Her başlık altında en az 150-200 kelime kullan.
+    2. **TON:** "Magazin astroloğu" gibi değil, "Ruh Bilimci" gibi konuş. Ciddi, hafif gizemli, profesyonel ve etkileyici.
     3. **ANALİZ YAPISI:**
-       - **Bilinçaltı Kodları:** Partnerin söylemediği ama hissettiği şeyleri "Jungiyen Gölge" teorisiyle açıkla.
-       - **Manipülasyon Taraması:** İlişkide gaslighting, love bombing veya breadcrumbing var mı? Varsa akademik terimlerle ifşa et.
+       - **Bilinçaltı Kodları (Jungiyen Gölge):** Partnerin söylemediği ama hissettiği şeyleri analiz et.
+       - **Manipülasyon Taraması (Gottman Metodu):** İlişkide 'Mahşerin Dört Atlısı' (Eleştiri, Savunma, Aşağılama, Duvar Örme) var mı? Gaslighting veya love bombing var mı? Varsa ifşa et.
        - **Gelecek Projeksiyonu:** Bu ilişkinin 6 ay, 1 yıl ve 5 yıl sonrasını net bir dille simüle et.
     
     ÇIKTI FORMATI (HTML):
     'premium_report_content' alanı, zengin ve şık bir HTML olmalıdır.
     - Başlıklar için: <h3 class="font-serif text-2xl text-chic-deep mb-4 mt-8 italic border-b border-chic-primary/30 pb-2">Başlık</h3>
+    - Paragraflar: Uzun ve detaylı olmalı.
     - Vurgular için: <strong class="text-chic-accent font-medium">Vurgu</strong>
-    - Kutu İçerikleri (Örn: Tehlike Sinyali): <div class="bg-red-50 p-4 border-l-4 border-red-300 my-4 text-sm italic text-gray-700">İçerik</div>
+    - Kutu İçerikleri (Örn: Tehlike Sinyali): <div class="bg-red-50 p-6 border-l-4 border-red-300 my-6 text-gray-700 italic rounded-r-lg">İçerik</div>
 
     ÖZEL İSTEK (GÖRSEL TASVİR):
-    'future_visual_description' alanına; bu çiftin 20 yıl sonra fiziksel olarak nasıl görüneceğini, yüz hatlarının nasıl değişeceğini, yanlarında çocukları varsa kime benzeyeceğini edebi bir dille tasvir et. Bu metin kullanıcıya "Sneak Peek" olarak sunulacak.
+    'future_visual_description' alanına; bu çiftin 20 yıl sonra fiziksel olarak nasıl görüneceğini, yüz hatlarının nasıl değişeceğini, yanlarında çocukları varsa kime benzeyeceğini edebi bir dille tasvir et. Bu metin kullanıcıya görselin "açıklaması" olarak sunulacak.
   `;
 
   const userZodiacStr = userZodiac || "Belirtilmedi";
@@ -101,19 +98,15 @@ export const analyzeRelationship = async (
     });
 
     let jsonString = response.text || '{}';
-    // Clean Markdown
-    if (jsonString.startsWith('```json')) {
-      jsonString = jsonString.replace(/^```json\n/, '').replace(/\n```$/, '');
-    } else if (jsonString.startsWith('```')) {
-        jsonString = jsonString.replace(/^```\n/, '').replace(/\n```$/, '');
-    }
+    // Robust Markdown Cleanup
+    jsonString = jsonString.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
     return JSON.parse(jsonString);
   } catch (error: any) {
     console.error("Gemini Error:", error);
     let errorMsg = "Analiz sırasında teknik bir hata oluştu. Lütfen tekrar deneyin.";
     if (error.message && (error.message.includes("API key") || error.message.includes("403"))) {
-        errorMsg = "Sistem Hatası: API Anahtarı doğrulanamadı. (Lütfen .env dosyasını kontrol edin)";
+        errorMsg = "Sistem Hatası: API Anahtarı doğrulanamadı. Lütfen .env dosyasında VITE_GOOGLE_API_KEY tanımlı olduğundan emin olun.";
     }
     throw new Error(errorMsg);
   }
