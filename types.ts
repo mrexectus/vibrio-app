@@ -8,6 +8,7 @@ export interface VibrioResponse {
     attachment_style: string;
     conflict_style: string;
   };
+  future_visual_description?: string; // New field for the visual projection text
   premium_report_content: string;
   numerology?: {
     life_path_compatibility: number;
