@@ -32,31 +32,31 @@ const getAstroInsight = (z1: string, z2: string) => {
   const aspects = [
     { 
       name: "Kavuşum (0°): Ayna Etkisi", 
-      desc: "Siz birbirinizin ruh ikizisiniz. Kelimelere ihtiyaç duymadan anlaşabilen ender çiftlerdensiniz. Ancak bu benzerlik, zaman zaman ego savaşlarına ve 'kendinle kavga etme' hissine dönüşebilir. Empati yeteneğiniz muazzam yüksek." 
+      desc: "Siz birbirinizin ruh ikizisiniz. Kelimelere ihtiyaç duymadan anlaşabilen ender çiftlerdensiniz. Ancak bu benzerlik, ego savaşlarına dönüşebilir." 
     },
     { 
       name: "Yarı Sekstil (30°): Öğretici Farklılık", 
-      desc: "Birbirinizden tamamen farklı dünyaların insanlarısınız, ancak bu bir engel değil, bir fırsat. Bu ilişki, konfor alanınızdan çıkıp büyümeniz için tasarlandı. Sabır gösterirseniz, birbirinize bilmediğiniz yönleri öğreteceksiniz." 
+      desc: "Farklı dünyaların insanlarısınız. Bu ilişki, konfor alanınızdan çıkıp büyümeniz için tasarlandı. Sabır gösterirseniz birbirinize çok şey katarsınız." 
     },
     { 
       name: "Sekstil (60°): Suç Ortaklığı", 
-      desc: "İlişkinin temeli çok sağlam bir dostluğa dayanıyor. İletişiminiz su gibi akıyor; hem sevgilisiniz hem de en iyi arkadaşsınız. Birlikteyken zamanın nasıl geçtiğini anlamazsınız, zihinsel uyumunuz mükemmel." 
+      desc: "İlişkinin temeli sağlam bir dostluğa dayanıyor. İletişiminiz su gibi akıyor; hem sevgilisiniz hem de en iyi arkadaşsınız." 
     },
     { 
       name: "Kare (90°): Yüksek Voltaj", 
-      desc: "Aranızdaki cinsel çekim ve tutku havai fişekler gibi; patlayıcı ve göz alıcı. Ancak bu enerji, inatlaşma ve çatışmayı da beraberinde getiriyor. Bu ilişki sizi dönüştürecek, asla sıradan ve sıkıcı olmayacak." 
+      desc: "Cinsel çekim ve tutku havai fişekler gibi; patlayıcı. Ancak bu enerji, inatlaşma ve çatışmayı da beraberinde getiriyor. Asla sıkıcı olmaz." 
     },
     { 
       name: "Üçgen (120°): İlahi Akış", 
-      desc: "Kozmik bir hediye gibi, her şey kendiliğinden ve çabasız ilerliyor. Birbirinizin yaralarını sarıyor, yanında huzur buluyorsunuz. Güven sorunu yaşanması en zor açılardan biri, aidiyet hissi çok yüksek." 
+      desc: "Kozmik bir hediye gibi, her şey kendiliğinden ilerliyor. Birbirinizin yaralarını sarıyor, yanında huzur buluyorsunuz. Güven tam." 
     },
     { 
       name: "Karmik (150°): Kadersel Borç", 
-      desc: "Mantıkla açıklanamayan, tuhaf ve manyetik bir çekim var. Sanki geçmiş hayatlardan tanışıyorsunuz ama bir türlü tam olarak 'bir' olamıyorsunuz. Bu ilişki, ruhsal bir ders almak için hayatınıza girmiş olabilir." 
+      desc: "Mantıkla açıklanamayan, manyetik bir çekim var. Sanki geçmiş hayatlardan tanışıyorsunuz. Ruhsal bir ders almak için bir aradasınız." 
     },
     { 
       name: "Zıt (180°): Mıknatıs Etkisi", 
-      desc: "Zıt kutupların karşı konulmaz çekimi! O sende olmayanı tamamlıyor, sen onda eksik olanı. Dengeyi kurmak zor olabilir ama kurulduğunda, birbirinizden kopmanız imkansız hale gelir. Tutku ve gerilim iç içe." 
+      desc: "Zıt kutupların karşı konulmaz çekimi! O sende olmayanı tamamlıyor. Denge kurulduğunda kopmanız imkansız hale gelir." 
     }
   ];
   return aspects[diff];
@@ -79,8 +79,11 @@ const App: React.FC = () => {
   const [socialProof, setSocialProof] = useState<{name: string, location: string} | null>(null);
   const [showSample, setShowSample] = useState(false);
   
+  // New state for handling tooltip visibility
+  const [showAstroTooltip, setShowAstroTooltip] = useState(false);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const topRef = useRef<HTMLDivElement>(null); // Ref for top of main
+  const topRef = useRef<HTMLDivElement>(null); 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -126,12 +129,23 @@ const App: React.FC = () => {
       return () => clearInterval(t);
     }
     if(status === AnalysisStatus.COMPLETED) {
-        // Immediate scroll to top with no offset issues
         setTimeout(() => {
             topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 50);
     }
   }, [status]);
+
+  const astroInsight = useMemo(() => getAstroInsight(userZodiac, partnerZodiac), [userZodiac, partnerZodiac]);
+
+  // Handle Tooltip Logic
+  useEffect(() => {
+    if (astroInsight) {
+        setShowAstroTooltip(true);
+        // Auto-dismiss after 8 seconds
+        const timer = setTimeout(() => setShowAstroTooltip(false), 8000);
+        return () => clearTimeout(timer);
+    }
+  }, [astroInsight]);
 
   const toggleRelStatus = (id: string) => {
     setRelStatus(prev => prev === id ? '' : id);
@@ -148,7 +162,6 @@ const App: React.FC = () => {
   };
 
   const reset = () => { localStorage.removeItem('vibrio_result'); setResult(null); setStatus(AnalysisStatus.IDLE); setInputText(''); setIsUnlocked(false); setImageFile(null); };
-  const astroInsight = useMemo(() => getAstroInsight(userZodiac, partnerZodiac), [userZodiac, partnerZodiac]);
   const addEmoji = (emoji: string) => { setInputText(prev => prev + emoji); textareaRef.current?.focus(); };
 
   const handleShare = async () => {
@@ -170,13 +183,13 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-dvh font-sans text-chic-text selection:bg-chic-primary selection:text-white pb-safe relative overflow-x-hidden">
-      <nav ref={topRef} className="hidden md:flex fixed top-0 w-full z-50 bg-chic-bg/95 backdrop-blur-md border-b border-chic-primary/10 h-20 items-center transition-all shadow-sm">
+      <nav ref={topRef} className="hidden md:flex fixed top-0 w-full z-50 bg-chic-bg/95 backdrop-blur-md border-b border-chic-primary/10 h-16 items-center transition-all shadow-sm">
         <div className="max-w-6xl w-full mx-auto px-6 flex justify-between items-center">
-          <div onClick={reset} className="cursor-pointer scale-90"><Logo /></div>
+          <div onClick={reset} className="cursor-pointer scale-75 origin-left"><Logo /></div>
           {status === AnalysisStatus.COMPLETED && (
             <button 
               onClick={reset} 
-              className="bg-chic-deep text-white hover:bg-chic-deep/80 transition-all px-8 py-2 rounded-full text-xs font-bold tracking-widest shadow-lg flex items-center gap-2 transform hover:scale-105 active:scale-95 border border-white/10"
+              className="bg-chic-deep text-white hover:bg-chic-deep/80 transition-all px-6 py-2 rounded-full text-[10px] font-bold tracking-widest shadow-lg flex items-center gap-2 transform hover:scale-105 active:scale-95 border border-white/10"
             >
               + YENİ ANALİZ
             </button>
@@ -184,10 +197,10 @@ const App: React.FC = () => {
         </div>
       </nav>
 
-      <main className="md:pt-28 w-full max-w-6xl mx-auto md:pb-12">
+      <main className="md:pt-20 w-full max-w-6xl mx-auto md:pb-8">
         {status === AnalysisStatus.IDLE && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center animate-fadeIn min-h-[75vh]">
-            <div className="hidden md:flex flex-col space-y-6 pt-2 sticky top-24 self-center pl-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center animate-fadeIn min-h-[85vh]">
+            <div className="hidden md:flex flex-col space-y-4 pt-2 sticky top-24 self-center pl-4">
                <h1 className="text-3xl font-serif font-light text-chic-deep leading-tight tracking-wide">
                  Onun Zihnini & <br/><span className="italic text-chic-primary font-normal">Kalbini Oku.</span>
                </h1>
@@ -195,7 +208,7 @@ const App: React.FC = () => {
                  Vibrio; Jungiyen psikoloji ve astrolojinin gücüyle, ilişkinin görünmeyen yüzünü ortaya çıkaran profesyonel bir analiz aracıdır.
                </p>
                
-               <div className="grid grid-cols-1 gap-3 mt-4">
+               <div className="grid grid-cols-1 gap-2 mt-4">
                   <div className="flex items-center gap-3 opacity-80"><span className="text-lg">🧠</span><span className="text-xs text-chic-deep">Bilinçaltı Okuma</span></div>
                   <div className="flex items-center gap-3 opacity-80"><span className="text-lg">🚩</span><span className="text-xs text-chic-deep">Manipülasyon Taraması</span></div>
                   <div className="flex items-center gap-3 opacity-80"><span className="text-lg">👶</span><span className="text-xs text-chic-deep">Gelecek Simülasyonu</span></div>
@@ -205,9 +218,9 @@ const App: React.FC = () => {
             <div className="w-full flex flex-col justify-center min-h-dvh md:min-h-0 md:justify-center py-4 md:py-0 px-2 md:px-0">
                <div className="md:hidden text-center mb-4 scale-90"><Logo /></div>
 
-               <div className="bg-white/90 backdrop-blur-xl p-5 md:p-8 rounded-3xl shadow-xl border border-chic-primary/20 relative overflow-visible">
+               <div className="bg-white/90 backdrop-blur-xl p-5 md:p-6 rounded-3xl shadow-xl border border-chic-primary/20 relative overflow-visible">
                  
-                 <div className="space-y-5">
+                 <div className="space-y-4">
                     <div className="relative">
                       <textarea
                         ref={textareaRef}
@@ -215,7 +228,7 @@ const App: React.FC = () => {
                         onChange={(e) => setInputText(e.target.value)}
                         onFocus={() => setIsTextareaFocused(true)}
                         onBlur={() => setIsTextareaFocused(false)}
-                        className="w-full h-32 md:h-36 bg-transparent text-base md:text-lg text-chic-deep placeholder:text-chic-deep/30 resize-none focus:outline-none font-medium leading-relaxed pr-8"
+                        className="w-full h-28 md:h-32 bg-transparent text-base text-chic-deep placeholder:text-chic-deep/30 resize-none focus:outline-none font-medium leading-relaxed pr-8"
                         placeholder="İlişkinizden bahsedin... (Örn: 'Bana karşı ilgisizleşti, mesajlarıma geç dönüyor ama buluşunca her şey harika. Burcu kova...')"
                       />
                       {inputText && (
@@ -253,25 +266,26 @@ const App: React.FC = () => {
                         <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1">
                             <label className="text-[9px] uppercase tracking-widest text-chic-accent font-bold">Senin Burcun</label>
-                            <select value={userZodiac} onChange={(e) => setUserZodiac(e.target.value)} className="w-full bg-chic-bg p-3 rounded-lg border border-chic-primary/20 text-chic-deep text-sm focus:border-chic-primary outline-none appearance-none cursor-pointer hover:bg-white transition-colors">
+                            <select value={userZodiac} onChange={(e) => setUserZodiac(e.target.value)} className="w-full bg-chic-bg p-2.5 rounded-lg border border-chic-primary/20 text-chic-deep text-sm focus:border-chic-primary outline-none appearance-none cursor-pointer hover:bg-white transition-colors">
                             <option value="">Seçiniz</option>
                             {ZODIACS.map(z => <option key={z} value={z}>{z}</option>)}
                             </select>
                         </div>
                         <div className="space-y-1">
                             <label className="text-[9px] uppercase tracking-widest text-chic-accent font-bold">Partnerin Burcu</label>
-                            <select value={partnerZodiac} onChange={(e) => setPartnerZodiac(e.target.value)} className="w-full bg-chic-bg p-3 rounded-lg border border-chic-primary/20 text-chic-deep text-sm focus:border-chic-primary outline-none appearance-none cursor-pointer hover:bg-white transition-colors">
+                            <select value={partnerZodiac} onChange={(e) => setPartnerZodiac(e.target.value)} className="w-full bg-chic-bg p-2.5 rounded-lg border border-chic-primary/20 text-chic-deep text-sm focus:border-chic-primary outline-none appearance-none cursor-pointer hover:bg-white transition-colors">
                             <option value="">Seçiniz</option>
                             {ZODIACS.map(z => <option key={z} value={z}>{z}</option>)}
                             </select>
                         </div>
                         </div>
 
-                        {/* Astro Insight Overlay - Positioned BELOW selects to avoid blocking */}
-                        {astroInsight && (
-                            <div className="absolute left-0 right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-xl border border-chic-primary/20 z-40 animate-slideUp pointer-events-none">
+                        {/* Astro Insight Overlay - Dismissible */}
+                        {showAstroTooltip && astroInsight && (
+                            <div className="absolute left-0 right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-2xl border border-chic-primary/20 z-50 animate-slideUp">
+                                <button onClick={() => setShowAstroTooltip(false)} className="absolute top-1 right-2 text-chic-deep/50 hover:text-chic-deep text-lg font-bold">&times;</button>
                                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-45 w-3 h-3 bg-white border-l border-t border-chic-primary/20"></div>
-                                <div className="flex gap-3 items-start">
+                                <div className="flex gap-3 items-start pr-4">
                                     <span className="text-xl">✨</span>
                                     <div>
                                         <h4 className="font-serif font-bold text-chic-deep text-sm">{astroInsight.name}</h4>
@@ -282,7 +296,7 @@ const App: React.FC = () => {
                         )}
                     </div>
 
-                    <div className="space-y-1 pt-2">
+                    <div className="space-y-1 pt-1">
                       <label className="text-[9px] uppercase tracking-widest text-chic-accent font-bold">İlişki Durumu</label>
                       <div className="flex flex-wrap gap-2">
                         {RELATIONSHIP_TYPES.map(type => (
@@ -344,41 +358,47 @@ const App: React.FC = () => {
 
         {status === AnalysisStatus.COMPLETED && result && (
           <div className="animate-slideUp pt-2 px-4 md:px-0">
-             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12">
+             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
                 
-                {/* Sol Panel: Metrikler (Ücretsiz Kısım) */}
+                {/* Sol Panel: Metrikler (COMPACT) */}
                 <div className="md:col-span-4 space-y-4">
-                   <div className="bg-white p-6 rounded-3xl shadow-sm border border-chic-primary/10 flex flex-col items-center relative overflow-hidden">
+                   <div className="bg-white p-5 rounded-3xl shadow-sm border border-chic-primary/10 relative overflow-hidden">
                       <div className="absolute inset-0 bg-floral-pattern opacity-[0.03]"></div>
                       
-                      <div className="relative z-10 w-full mb-6 text-center">
-                        <span className="text-4xl text-chic-primary/20 absolute -top-4 left-0">"</span>
-                        <p className="text-2xl md:text-3xl font-hand text-chic-deep leading-snug rotate-[-1deg] mx-4">
-                           {result.free_comment}
-                        </p>
-                        <span className="text-4xl text-chic-primary/20 absolute -bottom-8 right-0 rotate-180">"</span>
-                      </div>
-
-                      <div className="mt-4 flex flex-col items-center opacity-80 scale-90">
-                        <h3 className="text-[10px] font-bold uppercase tracking-widest text-chic-accent mb-2">Genel Uyum Skoru</h3>
-                        <VibrioGauge score={result.vibrio_score} />
+                      {/* Compact Header: Quote + Gauge Side by Side or stacked tightly */}
+                      <div className="relative z-10 flex flex-col items-center">
+                         <div className="text-center mb-4 px-2">
+                             <p className="text-xl md:text-2xl font-hand text-chic-deep leading-snug">
+                                {result.free_comment}
+                             </p>
+                         </div>
+                         <div className="w-full h-[1px] bg-chic-primary/10 mb-4"></div>
+                         
+                         {/* Metrics Row */}
+                         <div className="flex justify-around w-full items-center">
+                            <div className="flex flex-col items-center">
+                                <span className="text-[9px] uppercase tracking-widest text-chic-accent mb-1">Skor</span>
+                                <VibrioGauge score={result.vibrio_score} />
+                            </div>
+                            <div className="h-10 w-[1px] bg-chic-primary/10"></div>
+                            <div className="flex flex-col gap-2">
+                                <div className="text-center">
+                                    <span className="block text-[8px] uppercase tracking-widest text-chic-accent">Bağlanma</span>
+                                    <span className="text-chic-deep font-serif font-bold text-xs">{result.metrics.attachment_style}</span>
+                                </div>
+                                <div className="text-center">
+                                    <span className="block text-[8px] uppercase tracking-widest text-chic-accent">Çatışma</span>
+                                    <span className="text-chic-deep font-serif font-bold text-xs">{result.metrics.conflict_style}</span>
+                                </div>
+                            </div>
+                         </div>
                       </div>
                    </div>
-                   
-                   <div className="bg-white p-6 rounded-3xl shadow-sm border border-chic-primary/10">
-                      <h3 className="text-sm font-bold uppercase tracking-widest text-chic-accent mb-4 text-center">İlişki Dengesi</h3>
-                      <div className="h-48 w-full">
+
+                   {/* Radar Chart Small */}
+                   <div className="bg-white p-4 rounded-3xl shadow-sm border border-chic-primary/10">
+                      <div className="h-32 w-full">
                          <RadarChart trust={result.metrics.trust} passion={result.metrics.passion} communication={result.metrics.communication} />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4 mt-6 text-center">
-                         <div className="p-3 bg-chic-bg rounded-xl border border-chic-primary/10">
-                            <span className="block text-[9px] uppercase tracking-widest text-chic-accent mb-1">Bağlanma</span>
-                            <span className="text-chic-deep font-serif font-bold text-sm">{result.metrics.attachment_style}</span>
-                         </div>
-                         <div className="p-3 bg-chic-bg rounded-xl border border-chic-primary/10">
-                            <span className="block text-[9px] uppercase tracking-widest text-chic-accent mb-1">Çatışma</span>
-                            <span className="text-chic-deep font-serif font-bold text-sm">{result.metrics.conflict_style}</span>
-                         </div>
                       </div>
                    </div>
 
@@ -393,21 +413,20 @@ const App: React.FC = () => {
                    
                    <button 
                       onClick={reset}
-                      className="md:hidden w-full py-4 bg-chic-deep text-white font-bold rounded-2xl uppercase text-sm tracking-widest hover:bg-chic-deep/90 shadow-xl mt-4 border border-white/10"
+                      className="md:hidden w-full py-4 bg-chic-deep text-white font-bold rounded-2xl uppercase text-sm tracking-widest hover:bg-chic-deep/90 shadow-xl mt-2 border border-white/10"
                     >
                       + YENİ ANALİZ
                     </button>
                 </div>
 
                 {/* Sağ Panel: Premium Rapor & Paywall */}
-                <div className="md:col-span-8 relative min-h-[600px] flex flex-col">
+                <div className="md:col-span-8 relative flex flex-col">
                    
-                   {/* PAYWALL - REFINED */}
+                   {/* PAYWALL */}
                    {!isUnlocked && (
-                     <div className="z-30 mb-8 w-full">
+                     <div className="z-30 w-full mb-4">
                        <Paywall onUnlock={() => setIsUnlocked(true)} />
                        
-                       {/* Sample Report Trigger Button */}
                        <div className="text-center mt-3">
                           <button 
                              onClick={() => { handleShowSample(); setShowSample(true); }}
@@ -420,7 +439,7 @@ const App: React.FC = () => {
                    )}
                    
                    {/* Rapor İçeriği */}
-                   <div className={`relative transition-all duration-700 bg-white p-8 rounded-3xl border border-chic-primary/10 ${!isUnlocked ? 'h-[300px] overflow-hidden blur-md opacity-60 select-none pointer-events-none mt-4' : 'opacity-100'}`}>
+                   <div className={`relative transition-all duration-700 bg-white p-6 md:p-8 rounded-3xl border border-chic-primary/10 ${!isUnlocked ? 'h-[250px] overflow-hidden blur-sm opacity-60 select-none pointer-events-none' : 'opacity-100 min-h-[500px]'}`}>
                       <PremiumReport content={result.premium_report_content} />
                    </div>
                 </div>

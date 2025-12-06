@@ -8,31 +8,47 @@ export const sampleReportContent = `
         <span>📸</span> <span class="italic">Gelecek Simülasyonu (Vibrio AI Vision)</span>
      </h3>
      
-     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <!-- Current -->
-        <div class="space-y-2">
-            <div class="aspect-square rounded-xl overflow-hidden bg-gray-100 relative">
-                <img src="https://images.unsplash.com/photo-1516585427167-9f4af9627e6c?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover opacity-80" alt="Current Couple">
-                <span class="absolute bottom-2 left-2 bg-black/50 text-white text-[9px] px-2 py-1 rounded-full uppercase tracking-widest backdrop-blur-md">Bugün</span>
+     <div class="grid grid-cols-2 gap-4">
+        <!-- Comparison Block -->
+        <div class="col-span-2 md:col-span-1 space-y-2">
+            <div class="flex gap-2">
+                <div class="w-1/2 aspect-[3/4] rounded-xl overflow-hidden bg-gray-100 relative">
+                    <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover" alt="Couple Today">
+                    <span class="absolute bottom-2 left-2 bg-black/50 text-white text-[8px] px-2 py-1 rounded-full uppercase tracking-widest backdrop-blur-md">2025 (Bugün)</span>
+                </div>
+                <div class="w-1/2 aspect-[3/4] rounded-xl overflow-hidden bg-gray-100 relative border-2 border-chic-primary/30">
+                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover sepia-[.15]" alt="Couple 20 Years">
+                    <span class="absolute bottom-2 left-2 bg-chic-primary text-white text-[8px] px-2 py-1 rounded-full uppercase tracking-widest shadow-md">2045 (Simüle)</span>
+                </div>
             </div>
+            <p class="text-[9px] text-chic-text/60 italic leading-tight text-center">Yapay zeka ile yaşlandırılmış yüz hatları ve potansiyel değişim.</p>
         </div>
 
-        <!-- 20 Years Later -->
-        <div class="space-y-2">
-            <div class="aspect-square rounded-xl overflow-hidden bg-gray-100 relative border-2 border-chic-primary/50">
-                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover sepia-[.3]" alt="Older Couple">
-                <span class="absolute bottom-2 left-2 bg-chic-primary text-white text-[9px] px-2 py-1 rounded-full uppercase tracking-widest shadow-lg">20 Yıl Sonra</span>
+        <!-- Charts Block -->
+        <div class="col-span-2 md:col-span-1 bg-chic-bg/50 p-4 rounded-xl border border-chic-primary/10 flex flex-col justify-center">
+            <h4 class="text-[10px] uppercase tracking-widest text-chic-accent mb-3 font-bold">Uyumluluk Analizi</h4>
+            
+            <!-- Bar Chart 1 -->
+            <div class="mb-3">
+                <div class="flex justify-between text-[9px] text-chic-deep mb-1"><span>İletişim Akışı</span><span>%85</span></div>
+                <div class="w-full h-2 bg-white rounded-full overflow-hidden">
+                    <div class="h-full bg-chic-success w-[85%] rounded-full"></div>
+                </div>
             </div>
-            <p class="text-[9px] text-chic-text/70 leading-tight">Yüz hatlarındaki çizgiler ve gülümseme simetrisi korunarak yaşlandırıldı.</p>
-        </div>
-
-        <!-- Future Child -->
-        <div class="hidden md:block space-y-2">
-            <div class="aspect-square rounded-xl overflow-hidden bg-gray-100 relative">
-                <img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover grayscale-[0.2]" alt="Future Child">
-                <span class="absolute bottom-2 left-2 bg-chic-secondary text-chic-deep text-[9px] px-2 py-1 rounded-full uppercase tracking-widest font-bold">Tahmini Çocuk</span>
+             <!-- Bar Chart 2 -->
+            <div class="mb-3">
+                <div class="flex justify-between text-[9px] text-chic-deep mb-1"><span>Cinsel Çekim</span><span>%92</span></div>
+                <div class="w-full h-2 bg-white rounded-full overflow-hidden">
+                    <div class="h-full bg-red-300 w-[92%] rounded-full"></div>
+                </div>
             </div>
-            <p class="text-[9px] text-chic-text/70 leading-tight">Genetik baskınlık analizine göre muhtemel çocuk profili.</p>
+             <!-- Bar Chart 3 -->
+            <div>
+                <div class="flex justify-between text-[9px] text-chic-deep mb-1"><span>Empati & Anlayış</span><span>%64</span></div>
+                <div class="w-full h-2 bg-white rounded-full overflow-hidden">
+                    <div class="h-full bg-chic-primary w-[64%] rounded-full"></div>
+                </div>
+            </div>
         </div>
      </div>
   </div>
