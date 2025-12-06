@@ -30,7 +30,7 @@ const responseSchema: Schema = {
       },
       required: ["trust", "passion", "communication", "attachment_style", "conflict_style"],
     },
-    future_visual_description: { type: Type.STRING, description: "A detailed physical description of the couple in 20 years or their potential child, for image generation context." },
+    future_visual_description: { type: Type.STRING, description: "A highly detailed, 50-word physical description of the couple 20 years later or their future child. Vivid imagery." },
     premium_report_content: { type: Type.STRING },
   },
   required: ["vibrio_score", "free_comment", "metrics", "premium_report_content"],
@@ -44,52 +44,35 @@ export const analyzeRelationship = async (
   imageFile?: File | null
 ): Promise<VibrioResponse> => {
   
-  // Ensure API Key exists
-  if (!process.env.API_KEY) {
-    throw new Error("API Anahtarı bulunamadı. Lütfen sistem yöneticisi ile iletişime geçin.");
+  // Robust check for API Key
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    throw new Error("API Anahtarı bulunamadı. Lütfen .env dosyasını kontrol edin veya Vercel ayarlarından API_KEY ekleyin.");
   }
 
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: apiKey });
 
   const systemInstruction = `
     ROL: Sen "Vibrio", dünyaca ünlü bir Klinik Psikolog, İlişki Terapisti ve Jungiyen Analistsin.
-    DİL: Akademik derinliği olan ancak anlaşılır, akıcı ve empatik Türkçe.
-    TON: Ciddi, otoriter ama şefkatli. Asla yüzeysel veya "magazin ağzı" ile konuşma. 
     
-    ÇOK ÖNEMLİ: Cevapların "üstün körü" olmamalı. Kullanıcı bir uzman raporu okuduğunu hissetmeli.
-    Her başlık altına EN AZ 200 KELİMELİK, derinlemesine analizler yaz.
+    GÖREV: Kullanıcının sağladığı metni ve varsa görseli analiz ederek ona hayatının en detaylı, en çarpıcı ilişki raporunu sunmalısın.
+    
+    KURALLAR:
+    1. **DERİNLİK:** Asla kısa, geçiştirme veya klişe cümleler kurma. Her bir başlık için en az 2-3 uzun paragraf yaz.
+    2. **TON:** Akademik, ciddi, hafif gizemli ama son derece profesyonel. "Magazin astroloğu" gibi değil, "Ruh Bilimci" gibi konuş.
+    3. **ANALİZ YAPISI:**
+       - **Bilinçaltı Kodları:** Partnerin söylemediği ama hissettiği şeyleri "Jungiyen Gölge" teorisiyle açıkla.
+       - **Manipülasyon Taraması:** İlişkide gaslighting, love bombing veya breadcrumbing var mı? Varsa akademik terimlerle ifşa et.
+       - **Gelecek Projeksiyonu:** Bu ilişkinin 6 ay, 1 yıl ve 5 yıl sonrasını net bir dille simüle et.
+    
+    ÇIKTI FORMATI (HTML):
+    'premium_report_content' alanı, zengin ve şık bir HTML olmalıdır.
+    - Başlıklar için: <h3 class="font-serif text-2xl text-chic-deep mb-4 mt-8 italic border-b border-chic-primary/30 pb-2">Başlık</h3>
+    - Vurgular için: <strong class="text-chic-accent font-medium">Vurgu</strong>
+    - Kutu İçerikleri (Örn: Tehlike Sinyali): <div class="bg-red-50 p-4 border-l-4 border-red-300 my-4 text-sm italic text-gray-700">İçerik</div>
 
-    HEDEF:
-    Kullanıcının verilerini analiz et ve ona hayatını değiştirecek derinlikte bir "Psikolojik İlişki Dosyası" sun.
-
-    ÖZEL YETENEK (DİJİTAL SEMİYOTİK & PSİKOLOJİ):
-    1. **Jungiyen Gölge Analizi:** Partnerin davranışlarını, "Gölge Benlik" (Shadow Self) teorisi üzerinden açıkla.
-    2. **Gottman Metodu:** İletişimdeki "Mahşerin 4 Atlısı"nı tespit et ve akademik çözüm öner.
-    3. **Gelecek Projeksiyonu:** Çiftin 20 yıl sonraki fiziksel hallerini ve auralarını veya çocuklarının kime benzeyeceğini 'future_visual_description' alanında detaylıca tasvir et (bu alan görsel oluşturma prompt'u olacak).
-
-    HTML ÇIKTI FORMATI (PREMIUM REPORT):
-    'premium_report_content' alanı, zengin bir HTML olmalıdır. Stil sahibi bir dergi sayfası gibi görünmelidir.
-
-    YAPI VE İÇERİK KURALLARI:
-
-    1. **GİRİŞ KARTI (KOZMİK SİNERJİ):**
-       - Burçların element uyumunu ve ilişkinin "Ruhsal Teması"nı detaylıca anlat.
-       - HTML: <h3 class="font-serif text-2xl text-chic-deep mb-4 mt-8 italic border-b border-chic-primary/30 pb-2">Kozmik Sinerji & Ruhsal Tema</h3>...
-
-    2. **BİLİNÇALTI KATMANLAR (DERİN PSİKOLOJİ):**
-       - Yüzeysel davranışların altındaki kök nedenleri (çocukluk travmaları, bağlanma stilleri) analiz et.
-       - HTML: <h3 class="font-serif text-2xl text-chic-deep mb-4 mt-12 italic border-b border-chic-primary/30 pb-2">Bilinçaltı & Gölge Benlik</h3>...
-       - **Gölge Kartı:** <div class="bg-gray-50 p-6 rounded-xl border-l-4 border-chic-deep shadow-sm mb-6 mt-4"><h4 class="font-serif font-bold text-chic-deep mb-2 text-sm uppercase tracking-widest">🌑 Gölge Yansıması</h4><p class="text-sm text-gray-700 leading-relaxed italic">"[Buraya çok çarpıcı ve derin bir psikolojik tespit yaz]"</p></div>
-
-    3. **KLİNİK ÇÖZÜMLEME (GOTTMAN & FREUD):**
-       - Toksik döngüyü kırmak için reçete ver.
-       - HTML: <h3 class="font-serif text-2xl text-chic-deep mb-4 mt-12 italic border-b border-chic-primary/30 pb-2">Klinik Teşhis & Reçete</h3>...
-
-    4. **GELECEK SİMÜLASYONU (6-12 AY):**
-       - Önümüzdeki 6-12 ay içinde yaşanacak muhtemel krizleri ve dönüm noktalarını ay ay anlat.
-       - HTML: <h3 class="font-serif text-2xl text-chic-deep mb-4 mt-12 italic border-b border-chic-primary/30 pb-2">Gelecek Zaman Çizelgesi</h3>...
-
-    LÜTFEN DİKKAT: Cümlelerin vurucu ve bilgece olsun. Kullanıcıya "Bunu nasıl bildi?" dedirtmelisin.
+    ÖZEL İSTEK (GÖRSEL TASVİR):
+    'future_visual_description' alanına; bu çiftin 20 yıl sonra fiziksel olarak nasıl görüneceğini, yüz hatlarının nasıl değişeceğini, yanlarında çocukları varsa kime benzeyeceğini edebi bir dille tasvir et. Bu metin kullanıcıya "Sneak Peek" olarak sunulacak.
   `;
 
   const userZodiacStr = userZodiac || "Belirtilmedi";
@@ -97,7 +80,9 @@ export const analyzeRelationship = async (
   const relationshipStatusStr = relationshipStatus || "Belirtilmedi";
 
   const statusContext = `İlişki Durumu: ${relationshipStatusStr}`;
-  const parts: any[] = [{ text: `Kullanıcı: ${userZodiacStr}, Partner: ${partnerZodiacStr}, ${statusContext}, Metin: "${text}" \n ${systemInstruction}` }];
+  const promptText = `Kullanıcı Burcu: ${userZodiacStr}, Partner Burcu: ${partnerZodiacStr}, ${statusContext}. \nKullanıcı Notu: "${text}"`;
+
+  const parts: any[] = [{ text: promptText }];
   
   if (imageFile) {
     const base64Data = await fileToGenerativePart(imageFile);
@@ -108,11 +93,15 @@ export const analyzeRelationship = async (
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: { parts },
-      config: { responseMimeType: "application/json", responseSchema: responseSchema },
+      config: { 
+        systemInstruction: systemInstruction,
+        responseMimeType: "application/json", 
+        responseSchema: responseSchema 
+      },
     });
 
     let jsonString = response.text || '{}';
-    // Clean Markdown if present (fixes the crashing issue)
+    // Clean Markdown
     if (jsonString.startsWith('```json')) {
       jsonString = jsonString.replace(/^```json\n/, '').replace(/\n```$/, '');
     } else if (jsonString.startsWith('```')) {
@@ -122,9 +111,9 @@ export const analyzeRelationship = async (
     return JSON.parse(jsonString);
   } catch (error: any) {
     console.error("Gemini Error:", error);
-    let errorMsg = "Analiz sırasında teknik bir hata oluştu.";
-    if (error.message && error.message.includes("API key")) {
-        errorMsg = "API Anahtarı hatası. Lütfen sistem yapılandırmasını kontrol edin.";
+    let errorMsg = "Analiz sırasında teknik bir hata oluştu. Lütfen tekrar deneyin.";
+    if (error.message && (error.message.includes("API key") || error.message.includes("403"))) {
+        errorMsg = "Sistem Hatası: API Anahtarı doğrulanamadı. (Lütfen .env dosyasını kontrol edin)";
     }
     throw new Error(errorMsg);
   }

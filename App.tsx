@@ -162,15 +162,15 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-dvh font-sans text-chic-text selection:bg-chic-primary selection:text-white pb-safe relative overflow-x-hidden">
-      <nav className="hidden md:flex fixed top-0 w-full z-50 bg-chic-bg/95 backdrop-blur-md border-b border-chic-primary/10 h-20 items-center transition-all">
+      <nav className="hidden md:flex fixed top-0 w-full z-50 bg-chic-bg/95 backdrop-blur-md border-b border-chic-primary/10 h-20 items-center transition-all shadow-sm">
         <div className="max-w-6xl w-full mx-auto px-6 flex justify-between items-center">
           <div onClick={reset} className="cursor-pointer scale-90"><Logo /></div>
           {status === AnalysisStatus.COMPLETED && (
             <button 
               onClick={reset} 
-              className="bg-chic-deep text-white hover:bg-chic-primary transition-all px-6 py-2.5 rounded-full text-sm font-bold tracking-wider shadow-lg flex items-center gap-2 transform hover:scale-105 active:scale-95 border-2 border-white/20"
+              className="bg-chic-deep text-white hover:bg-chic-primary transition-all px-8 py-3 rounded-xl text-base font-bold tracking-widest shadow-xl flex items-center gap-2 transform hover:scale-105 active:scale-95 border border-white/10"
             >
-              <span className="text-xl leading-none">+</span> YENİ ANALİZ
+              <span className="text-2xl leading-none font-light">+</span> YENİ ANALİZ
             </button>
           )}
         </div>
@@ -288,10 +288,10 @@ const App: React.FC = () => {
                          <button 
                            onClick={handleSubmit} 
                            disabled={(!inputText && !imageFile)}
-                           className="flex-[2] bg-chic-deep text-white font-serif italic text-lg rounded-xl shadow-lg hover:bg-chic-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                           className="flex-[2] bg-chic-deep text-white font-serif italic text-lg rounded-xl shadow-lg hover:bg-chic-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
                          >
                            <span>Analiz Et</span>
-                           <span className="text-xs no-italic font-sans opacity-70">→</span>
+                           <span className="text-xs no-italic font-sans opacity-70 group-hover:translate-x-1 transition-transform">→</span>
                          </button>
                       </div>
                       {errorMsg && <div className="bg-red-50 p-3 mt-4 rounded-lg border border-red-100 text-center"><p className="text-red-500 text-xs font-bold">{errorMsg}</p></div>}
@@ -323,7 +323,7 @@ const App: React.FC = () => {
                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-chic-primary/10 flex flex-col items-center">
                       <h3 className="text-sm font-bold uppercase tracking-widest text-chic-accent mb-6">Uyum Skoru</h3>
                       <VibrioGauge score={result.vibrio_score} />
-                      <p className="text-center text-xs text-chic-deep/60 mt-4 px-4 leading-relaxed">"{result.free_comment}"</p>
+                      <p className="text-center text-xs text-chic-deep/60 mt-4 px-4 leading-relaxed italic">"{result.free_comment}"</p>
                    </div>
                    
                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-chic-primary/10">
@@ -332,13 +332,13 @@ const App: React.FC = () => {
                          <RadarChart trust={result.metrics.trust} passion={result.metrics.passion} communication={result.metrics.communication} />
                       </div>
                       <div className="grid grid-cols-2 gap-4 mt-6 text-center">
-                         <div className="p-3 bg-chic-bg rounded-xl">
+                         <div className="p-3 bg-chic-bg rounded-xl border border-chic-primary/10">
                             <span className="block text-[9px] uppercase tracking-widest text-chic-accent mb-1">Bağlanma</span>
-                            <span className="text-chic-deep font-serif font-bold">{result.metrics.attachment_style}</span>
+                            <span className="text-chic-deep font-serif font-bold text-sm">{result.metrics.attachment_style}</span>
                          </div>
-                         <div className="p-3 bg-chic-bg rounded-xl">
+                         <div className="p-3 bg-chic-bg rounded-xl border border-chic-primary/10">
                             <span className="block text-[9px] uppercase tracking-widest text-chic-accent mb-1">Çatışma</span>
-                            <span className="text-chic-deep font-serif font-bold">{result.metrics.conflict_style}</span>
+                            <span className="text-chic-deep font-serif font-bold text-sm">{result.metrics.conflict_style}</span>
                          </div>
                       </div>
                    </div>
@@ -358,29 +358,29 @@ const App: React.FC = () => {
                       onClick={reset}
                       className="md:hidden w-full py-4 bg-chic-deep text-white font-bold rounded-xl uppercase text-xs tracking-widest hover:bg-chic-deep/90 shadow-lg mt-4"
                     >
-                      + Yeni Analiz
+                      + YENİ ANALİZ
                     </button>
                 </div>
 
                 {/* Sağ Panel: Premium Rapor & Paywall */}
                 <div className="md:col-span-8 relative min-h-[600px] flex flex-col">
                    
-                   {/* Paywall Container - MOVED UP TO BE THE FIRST THING */}
+                   {/* PAYWALL - Moved to TOP for maximum conversion */}
                    {!isUnlocked && (
-                     <div className="z-20 mb-8 w-full">
+                     <div className="z-30 mb-8 w-full sticky top-24">
                        <Paywall onUnlock={() => setIsUnlocked(true)} />
                      </div>
                    )}
                    
-                   {/* Rapor İçeriği - Kilitliyse blur var, kilit açılınca netleşiyor */}
-                   <div className={`${!isUnlocked ? 'h-[150px] overflow-hidden blur-md opacity-40 select-none pointer-events-none' : 'opacity-100 transition-opacity duration-700'}`}>
+                   {/* Rapor İçeriği - Kilitliyken bulanık */}
+                   <div className={`relative transition-all duration-700 ${!isUnlocked ? 'h-[250px] overflow-hidden blur-sm opacity-50 select-none pointer-events-none' : 'opacity-100'}`}>
                       <PremiumReport content={result.premium_report_content} />
+                      
+                      {/* Fade Effect for locked state */}
+                      {!isUnlocked && (
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-white z-10"></div>
+                      )}
                    </div>
-                   
-                   {/* Fake Content for Locked State to show text flow underneath */}
-                   {!isUnlocked && (
-                      <div className="h-[400px] w-full bg-gradient-to-b from-transparent to-chic-bg absolute top-[400px] pointer-events-none"></div>
-                   )}
                 </div>
              </div>
           </div>
