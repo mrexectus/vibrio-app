@@ -31,7 +31,7 @@ export const sampleReportContent = `
         <!-- 1. GÜNCEL HAL -->
         <div class="space-y-2">
             <div class="aspect-[3/4] rounded-xl overflow-hidden relative shadow-inner border border-gray-100">
-                <img src="https://images.unsplash.com/photo-1621784563330-caee0b138a00?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover" alt="Genç Çift">
+                <img src="https://images.unsplash.com/photo-1523419409543-a5e549c1faa8?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover" alt="Genç Çift">
                 <div class="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-white text-[8px] font-bold tracking-widest uppercase">
                     2025 (Bugün)
                 </div>
@@ -42,7 +42,8 @@ export const sampleReportContent = `
         <div class="space-y-2">
             <div class="aspect-[3/4] rounded-xl overflow-hidden relative shadow-md border-2 border-chic-primary/30">
                 <div class="absolute top-2 right-2 bg-chic-primary text-white text-[8px] px-2 py-0.5 rounded-full z-10 font-bold tracking-widest shadow-sm">AI SİMÜLASYON</div>
-                <img src="https://images.unsplash.com/photo-1501820488136-72669149e0d4?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover sepia-[0.15] contrast-110" alt="Yaşlı Çift">
+                <!-- VERIFIED ELDERLY COUPLE IMAGE - NO CATS -->
+                <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover sepia-[0.15] contrast-110" alt="Yaşlı Çift">
                 <div class="absolute bottom-2 left-2 bg-chic-deep/90 backdrop-blur-md px-2 py-1 rounded text-white text-[8px] font-bold tracking-widest uppercase">
                     2045 (Gelecek)
                 </div>
@@ -53,7 +54,7 @@ export const sampleReportContent = `
         <div class="col-span-2 md:col-span-1 space-y-2">
             <div class="aspect-[3/4] md:aspect-[3/4] h-full rounded-xl overflow-hidden relative shadow-inner border border-blue-100 bg-blue-50/50">
                 <div class="absolute top-2 right-2 bg-blue-400 text-white text-[8px] px-2 py-0.5 rounded-full z-10 font-bold tracking-widest shadow-sm">GENETİK TAHMİN</div>
-                <img src="https://images.unsplash.com/photo-1544126566-475dd3543d6c?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover" alt="Bebek">
+                <img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover" alt="Bebek">
                 <div class="absolute bottom-2 left-2 bg-blue-900/80 backdrop-blur-md px-2 py-1 rounded text-white text-[8px] font-bold tracking-widest uppercase">
                     Muhtemel Çocuk
                 </div>
