@@ -190,7 +190,8 @@ const App: React.FC = () => {
         {status === AnalysisStatus.IDLE && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center animate-fadeIn min-h-[75vh]">
             <div className="hidden md:flex flex-col space-y-6 pt-2 sticky top-24 self-center">
-               <h1 className="text-6xl font-serif font-medium text-chic-deep leading-tight">Onun Zihnini & <br/><span className="italic text-chic-primary">Kalbini Oku.</span></h1>
+               {/* Updated Typography to prevent overflow and look cleaner */}
+               <h1 className="text-4xl lg:text-5xl font-serif font-medium text-chic-deep leading-tight">Onun Zihnini & <br/><span className="italic text-chic-primary">Kalbini Oku.</span></h1>
                <p className="text-chic-text/80 leading-relaxed font-light text-lg">Vibrio; Jungiyen psikoloji ve astrolojinin gücüyle, ilişkinin görünmeyen yüzünü ortaya çıkaran profesyonel bir analiz aracıdır.</p>
                <PremiumBenefits />
             </div>
@@ -331,10 +332,24 @@ const App: React.FC = () => {
                 
                 {/* Sol Panel: Metrikler (Ücretsiz Kısım) */}
                 <div className="md:col-span-4 space-y-6">
-                   <div className="bg-white p-6 rounded-3xl shadow-sm border border-chic-primary/10 flex flex-col items-center">
-                      <h3 className="text-sm font-bold uppercase tracking-widest text-chic-accent mb-6">Uyum Skoru</h3>
-                      <VibrioGauge score={result.vibrio_score} />
-                      <p className="text-center text-xs text-chic-deep/60 mt-4 px-4 leading-relaxed italic">"{result.free_comment}"</p>
+                   <div className="bg-white p-6 rounded-3xl shadow-sm border border-chic-primary/10 flex flex-col items-center relative overflow-hidden">
+                      {/* Decorative Background for Paper Feel */}
+                      <div className="absolute inset-0 bg-floral-pattern opacity-[0.03]"></div>
+                      
+                      {/* CHANGED HIERARCHY: Comment first, large and handwritten */}
+                      <div className="relative z-10 w-full mb-6 text-center">
+                        <span className="text-4xl text-chic-primary/20 absolute -top-4 left-0">"</span>
+                        <p className="text-2xl md:text-3xl font-hand text-chic-deep leading-snug rotate-[-1deg] mx-4">
+                           {result.free_comment}
+                        </p>
+                        <span className="text-4xl text-chic-primary/20 absolute -bottom-8 right-0 rotate-180">"</span>
+                      </div>
+
+                      {/* Gauge moved below and smaller */}
+                      <div className="mt-4 flex flex-col items-center opacity-80 scale-90">
+                        <h3 className="text-[10px] font-bold uppercase tracking-widest text-chic-accent mb-2">Genel Uyum Skoru</h3>
+                        <VibrioGauge score={result.vibrio_score} />
+                      </div>
                    </div>
                    
                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-chic-primary/10">

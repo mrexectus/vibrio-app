@@ -11,6 +11,7 @@ export default {
       fontFamily: {
         sans: ['Quicksand', 'sans-serif'],
         serif: ['Playfair Display', 'serif'],
+        hand: ['Caveat', 'cursive'],
       },
       colors: {
         chic: {

@@ -6,7 +6,8 @@ interface VibrioGaugeProps {
 
 const VibrioGauge: React.FC<VibrioGaugeProps> = ({ score }) => {
   const [displayScore, setDisplayScore] = useState(0);
-  const radius = 55;
+  // Reduced size: Radius 40 (was 55), stroke 3
+  const radius = 40;
   const stroke = 3;
   const normalizedRadius = radius - stroke * 2;
   const circumference = normalizedRadius * 2 * Math.PI;
@@ -26,7 +27,7 @@ const VibrioGauge: React.FC<VibrioGaugeProps> = ({ score }) => {
   }, [score]);
 
   return (
-    <div className="relative w-36 h-36 flex items-center justify-center">
+    <div className="relative w-24 h-24 flex items-center justify-center">
       <svg height={radius * 2} width={radius * 2} className="rotate-[-90deg]">
         <circle 
           stroke="#F3E5E5" 
@@ -56,8 +57,7 @@ const VibrioGauge: React.FC<VibrioGaugeProps> = ({ score }) => {
       </svg>
       
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-4xl font-serif text-chic-deep font-medium">{displayScore}</span>
-        <span className="text-[8px] uppercase tracking-widest text-chic-accent mt-1">Uyum</span>
+        <span className="text-2xl font-serif text-chic-deep font-medium">{displayScore}</span>
       </div>
     </div>
   );
