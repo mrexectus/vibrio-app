@@ -28,7 +28,6 @@ const getAstroInsight = (z1: string, z2: string) => {
   let diff = Math.abs(i1 - i2);
   if (diff > 6) diff = 12 - diff;
   
-  // DETAYLI VE DOYURUCU ASTROLOJİK İÇGÖRÜLER
   const aspects = [
     { 
       name: "Kavuşum (0°): Ayna Etkisi", 
@@ -169,9 +168,9 @@ const App: React.FC = () => {
           {status === AnalysisStatus.COMPLETED && (
             <button 
               onClick={reset} 
-              className="bg-chic-deep text-white hover:bg-chic-primary transition-all px-8 py-3 rounded-full text-xs font-bold tracking-widest shadow-lg flex items-center gap-2 transform hover:scale-105 active:scale-95"
+              className="bg-chic-deep text-white hover:bg-chic-primary transition-all px-6 py-2.5 rounded-full text-sm font-bold tracking-wider shadow-lg flex items-center gap-2 transform hover:scale-105 active:scale-95 border-2 border-white/20"
             >
-              <span>+</span> YENİ ANALİZ
+              <span className="text-xl leading-none">+</span> YENİ ANALİZ
             </button>
           )}
         </div>
@@ -295,7 +294,7 @@ const App: React.FC = () => {
                            <span className="text-xs no-italic font-sans opacity-70">→</span>
                          </button>
                       </div>
-                      {errorMsg && <p className="text-red-400 text-[10px] mt-2 text-center">{errorMsg}</p>}
+                      {errorMsg && <div className="bg-red-50 p-3 mt-4 rounded-lg border border-red-100 text-center"><p className="text-red-500 text-xs font-bold">{errorMsg}</p></div>}
                     </div>
                  </div>
                </div>
@@ -345,38 +344,43 @@ const App: React.FC = () => {
                    </div>
 
                    {/* Görsel Projeksiyon (Sneak Peek) */}
-                   <VisualProjection description={result.future_visual_description} />
+                   <VisualProjection description={result.future_visual_description} isUnlocked={isUnlocked} />
 
                    {/* Mobilde burada görünsün, kilidi açınca kaybolur */}
-                   <button onClick={handleShare} className="w-full py-3 border border-chic-primary/30 rounded-xl text-chic-deep uppercase text-[10px] tracking-[0.2em] hover:bg-chic-primary hover:text-white transition-all">
-                      Sonucu Paylaş
-                   </button>
+                   {isUnlocked && (
+                     <button onClick={handleShare} className="w-full py-3 border border-chic-primary/30 rounded-xl text-chic-deep uppercase text-[10px] tracking-[0.2em] hover:bg-chic-primary hover:text-white transition-all">
+                        Sonucu Paylaş
+                     </button>
+                   )}
                    
                    {/* Mobile New Analysis Button */}
                    <button 
                       onClick={reset}
-                      className="md:hidden w-full py-3 bg-gray-100 rounded-xl text-chic-deep/50 uppercase text-[10px] tracking-widest hover:bg-gray-200"
+                      className="md:hidden w-full py-4 bg-chic-deep text-white font-bold rounded-xl uppercase text-xs tracking-widest hover:bg-chic-deep/90 shadow-lg mt-4"
                     >
-                      Yeni Analiz
+                      + Yeni Analiz
                     </button>
                 </div>
 
                 {/* Sağ Panel: Premium Rapor & Paywall */}
-                <div className="md:col-span-8 relative min-h-[600px]">
+                <div className="md:col-span-8 relative min-h-[600px] flex flex-col">
                    
-                   {/* Paywall Container - Now sits ABOVE the detailed content visually if locked */}
+                   {/* Paywall Container - MOVED UP TO BE THE FIRST THING */}
                    {!isUnlocked && (
-                     <div className="sticky top-24 z-20 mb-8">
+                     <div className="z-20 mb-8 w-full">
                        <Paywall onUnlock={() => setIsUnlocked(true)} />
                      </div>
                    )}
                    
-                   {/* Rapor İçeriği (Blur efektini CSS ile Paywall componentinde değil, burada parentta yönetebiliriz veya Paywall componentine bırakabiliriz. 
-                       Burada Paywall artık relative/sticky bir blok, içerik altında kalıyor. 
-                       Daha iyi bir UX için: Kilitliyse raporun sadece başını gösterip kesiyoruz.) */}
-                   <div className={`${!isUnlocked ? 'h-[200px] overflow-hidden blur-sm opacity-50 select-none pointer-events-none' : 'opacity-100 transition-opacity duration-700'}`}>
+                   {/* Rapor İçeriği - Kilitliyse blur var, kilit açılınca netleşiyor */}
+                   <div className={`${!isUnlocked ? 'h-[150px] overflow-hidden blur-md opacity-40 select-none pointer-events-none' : 'opacity-100 transition-opacity duration-700'}`}>
                       <PremiumReport content={result.premium_report_content} />
                    </div>
+                   
+                   {/* Fake Content for Locked State to show text flow underneath */}
+                   {!isUnlocked && (
+                      <div className="h-[400px] w-full bg-gradient-to-b from-transparent to-chic-bg absolute top-[400px] pointer-events-none"></div>
+                   )}
                 </div>
              </div>
           </div>

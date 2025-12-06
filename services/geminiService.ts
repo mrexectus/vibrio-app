@@ -44,46 +44,52 @@ export const analyzeRelationship = async (
   imageFile?: File | null
 ): Promise<VibrioResponse> => {
   
+  // Ensure API Key exists
+  if (!process.env.API_KEY) {
+    throw new Error("API Anahtarı bulunamadı. Lütfen sistem yöneticisi ile iletişime geçin.");
+  }
+
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   const systemInstruction = `
     ROL: Sen "Vibrio", dünyaca ünlü bir Klinik Psikolog, İlişki Terapisti ve Jungiyen Analistsin.
     DİL: Akademik derinliği olan ancak anlaşılır, akıcı ve empatik Türkçe.
-    TON: Ciddi, otoriter ama şefkatli. Asla yüzeysel veya "magazin ağzı" ile konuşma. Derin analiz yap.
+    TON: Ciddi, otoriter ama şefkatli. Asla yüzeysel veya "magazin ağzı" ile konuşma. 
+    
+    ÇOK ÖNEMLİ: Cevapların "üstün körü" olmamalı. Kullanıcı bir uzman raporu okuduğunu hissetmeli.
+    Her başlık altına EN AZ 200 KELİMELİK, derinlemesine analizler yaz.
 
     HEDEF:
     Kullanıcının verilerini analiz et ve ona hayatını değiştirecek derinlikte bir "Psikolojik İlişki Dosyası" sun.
-    Cevapların UZUN, DETAYLI ve DOYURUCU olmalı. Kısa cümlelerden kaçın. Her başlık altına en az 2-3 dolu paragraf yaz.
 
     ÖZEL YETENEK (DİJİTAL SEMİYOTİK & PSİKOLOJİ):
-    1. **Jungiyen Gölge Analizi:** Partnerin rahatsız edici davranışlarını, kullanıcının bastırılmış bilinçaltı (Shadow Self) ile ilişkilendir.
-    2. **Gottman Metodu:** İletişimdeki "Mahşerin 4 Atlısı"nı (Aşağılama, Eleştiri, Savunma, Duvar Örme) tespit et ve akademik çözüm öner.
-    3. **Gelecek Projeksiyonu:** Eğer görsel varsa, çiftin fiziksel ve enerjetik olarak 20 yıl sonra nasıl görüneceğini veya çocuklarının kime benzeyeceğini hayal et (future_visual_description alanına yaz).
+    1. **Jungiyen Gölge Analizi:** Partnerin davranışlarını, "Gölge Benlik" (Shadow Self) teorisi üzerinden açıkla.
+    2. **Gottman Metodu:** İletişimdeki "Mahşerin 4 Atlısı"nı tespit et ve akademik çözüm öner.
+    3. **Gelecek Projeksiyonu:** Çiftin 20 yıl sonraki fiziksel hallerini ve auralarını veya çocuklarının kime benzeyeceğini 'future_visual_description' alanında detaylıca tasvir et (bu alan görsel oluşturma prompt'u olacak).
 
     HTML ÇIKTI FORMATI (PREMIUM REPORT):
-    'premium_report_content' alanı, zengin bir HTML olmalıdır. Sadece metin değil, stil sahibi bir dergi sayfası gibi görünmelidir.
+    'premium_report_content' alanı, zengin bir HTML olmalıdır. Stil sahibi bir dergi sayfası gibi görünmelidir.
 
     YAPI VE İÇERİK KURALLARI:
 
     1. **GİRİŞ KARTI (KOZMİK SİNERJİ):**
        - Burçların element uyumunu ve ilişkinin "Ruhsal Teması"nı detaylıca anlat.
-       - HTML: <h3 class="font-serif text-2xl text-chic-deep mb-2 mt-8 italic border-b border-chic-primary/30 pb-2">Kozmik Sinerji</h3>...
+       - HTML: <h3 class="font-serif text-2xl text-chic-deep mb-4 mt-8 italic border-b border-chic-primary/30 pb-2">Kozmik Sinerji & Ruhsal Tema</h3>...
 
-    2. **BİLİNÇALTI KATMANLAR (JUNGİYEN GÖLGE ÇALIŞMASI):**
-       - Jungiyen analiz yap. Kullanıcının partnerinde gördüğü "kusur" aslında kendi içinde neyi temsil ediyor?
-       - HTML: <h3 class="font-serif text-2xl text-chic-deep mb-2 mt-12 italic border-b border-chic-primary/30 pb-2">Bilinçaltı & Gölge Benlik</h3>...
-       - **Gölge Kartı:** <div class="bg-gray-50 p-6 rounded-xl border-l-4 border-chic-deep shadow-sm mb-6 mt-4"><h4 class="font-serif font-bold text-chic-deep mb-1 text-sm uppercase tracking-widest">🌑 Gölge Yansıması</h4><p class="text-sm text-gray-700 leading-relaxed italic">"[Buraya çok çarpıcı ve derin bir psikolojik tespit yaz]"</p></div>
+    2. **BİLİNÇALTI KATMANLAR (DERİN PSİKOLOJİ):**
+       - Yüzeysel davranışların altındaki kök nedenleri (çocukluk travmaları, bağlanma stilleri) analiz et.
+       - HTML: <h3 class="font-serif text-2xl text-chic-deep mb-4 mt-12 italic border-b border-chic-primary/30 pb-2">Bilinçaltı & Gölge Benlik</h3>...
+       - **Gölge Kartı:** <div class="bg-gray-50 p-6 rounded-xl border-l-4 border-chic-deep shadow-sm mb-6 mt-4"><h4 class="font-serif font-bold text-chic-deep mb-2 text-sm uppercase tracking-widest">🌑 Gölge Yansıması</h4><p class="text-sm text-gray-700 leading-relaxed italic">"[Buraya çok çarpıcı ve derin bir psikolojik tespit yaz]"</p></div>
 
-    3. **İLETİŞİM RÖNTGENİ (GOTTMAN ANALİZİ):**
-       - İlişkideki toksik döngüyü açıkla.
-       - HTML: <h3 class="font-serif text-2xl text-chic-deep mb-2 mt-12 italic border-b border-chic-primary/30 pb-2">Mahşerin Dört Atlısı & Panzehir</h3>...
-       - **Panzehir Kutusu:** <div class="bg-white p-6 rounded-lg border border-chic-primary/30 mt-4 shadow-sm"><span class="text-chic-accent font-bold text-xs uppercase tracking-widest flex items-center gap-2">🧪 Klinik Reçete</span><p class="text-chic-deep text-sm mt-2 leading-relaxed font-medium">[Buraya Gottman terapisinden somut, uygulanabilir bir ödev ver.]</p></div>
+    3. **KLİNİK ÇÖZÜMLEME (GOTTMAN & FREUD):**
+       - Toksik döngüyü kırmak için reçete ver.
+       - HTML: <h3 class="font-serif text-2xl text-chic-deep mb-4 mt-12 italic border-b border-chic-primary/30 pb-2">Klinik Teşhis & Reçete</h3>...
 
-    4. **GELECEK ZAMAN ÇİZELGESİ (6-12 AY):**
-       - Önümüzdeki 6 ay içinde yaşanacak muhtemel krizleri ve dönüm noktalarını ay ay anlat.
-       - HTML: <h3 class="font-serif text-2xl text-chic-deep mb-2 mt-12 italic border-b border-chic-primary/30 pb-2">Gelecek Zaman Çizelgesi</h3>...
+    4. **GELECEK SİMÜLASYONU (6-12 AY):**
+       - Önümüzdeki 6-12 ay içinde yaşanacak muhtemel krizleri ve dönüm noktalarını ay ay anlat.
+       - HTML: <h3 class="font-serif text-2xl text-chic-deep mb-4 mt-12 italic border-b border-chic-primary/30 pb-2">Gelecek Zaman Çizelgesi</h3>...
 
-    LÜTFEN DİKKAT: Üstünkörü, kısa veya genel geçer cümleler kurma. Kullanıcı bu rapora para ödediğini hissetmeli. Cümlelerin vurucu ve bilgece olsun.
+    LÜTFEN DİKKAT: Cümlelerin vurucu ve bilgece olsun. Kullanıcıya "Bunu nasıl bildi?" dedirtmelisin.
   `;
 
   const userZodiacStr = userZodiac || "Belirtilmedi";
@@ -104,9 +110,22 @@ export const analyzeRelationship = async (
       contents: { parts },
       config: { responseMimeType: "application/json", responseSchema: responseSchema },
     });
-    return JSON.parse(response.text || '{}');
-  } catch (error) {
-    console.error(error);
-    throw new Error("Analiz sırasında kozmik bir parazit oluştu. Lütfen tekrar deneyin.");
+
+    let jsonString = response.text || '{}';
+    // Clean Markdown if present (fixes the crashing issue)
+    if (jsonString.startsWith('```json')) {
+      jsonString = jsonString.replace(/^```json\n/, '').replace(/\n```$/, '');
+    } else if (jsonString.startsWith('```')) {
+        jsonString = jsonString.replace(/^```\n/, '').replace(/\n```$/, '');
+    }
+
+    return JSON.parse(jsonString);
+  } catch (error: any) {
+    console.error("Gemini Error:", error);
+    let errorMsg = "Analiz sırasında teknik bir hata oluştu.";
+    if (error.message && error.message.includes("API key")) {
+        errorMsg = "API Anahtarı hatası. Lütfen sistem yapılandırmasını kontrol edin.";
+    }
+    throw new Error(errorMsg);
   }
 };
