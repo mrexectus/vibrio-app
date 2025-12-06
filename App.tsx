@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { analyzeRelationship } from './services/geminiService';
 import { AnalysisStatus, VibrioResponse } from './types';
@@ -79,7 +80,7 @@ const App: React.FC = () => {
   const [showSample, setShowSample] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const resultRef = useRef<HTMLDivElement>(null);
+  const topRef = useRef<HTMLDivElement>(null); // Ref for top of main
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -124,7 +125,12 @@ const App: React.FC = () => {
       const t = setInterval(() => { i=(i+1)%msgs.length; setLoadingMsg(msgs[i]); }, 2500);
       return () => clearInterval(t);
     }
-    if(status === AnalysisStatus.COMPLETED) setTimeout(() => resultRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+    if(status === AnalysisStatus.COMPLETED) {
+        // Immediate scroll to top with no offset issues
+        setTimeout(() => {
+            topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
+    }
   }, [status]);
 
   const toggleRelStatus = (id: string) => {
@@ -153,15 +159,10 @@ const App: React.FC = () => {
      }
   };
 
-  // Sample data loader (only imported when needed to save bundle size)
   const handleShowSample = async () => {
-    if (!showSample) {
-        // Dynamic import if possible, but here we just toggle
-        setShowSample(true);
-    }
+    if (!showSample) setShowSample(true);
   };
 
-  // Mock sample content for the demo modal
   const sampleContent = import('./services/sampleData').then(m => m.sampleReportContent);
   const [loadedSample, setLoadedSample] = useState<string>("");
   useEffect(() => { if(showSample) sampleContent.then(setLoadedSample); }, [showSample]);
@@ -169,7 +170,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-dvh font-sans text-chic-text selection:bg-chic-primary selection:text-white pb-safe relative overflow-x-hidden">
-      <nav className="hidden md:flex fixed top-0 w-full z-50 bg-chic-bg/95 backdrop-blur-md border-b border-chic-primary/10 h-20 items-center transition-all shadow-sm">
+      <nav ref={topRef} className="hidden md:flex fixed top-0 w-full z-50 bg-chic-bg/95 backdrop-blur-md border-b border-chic-primary/10 h-20 items-center transition-all shadow-sm">
         <div className="max-w-6xl w-full mx-auto px-6 flex justify-between items-center">
           <div onClick={reset} className="cursor-pointer scale-90"><Logo /></div>
           {status === AnalysisStatus.COMPLETED && (
@@ -187,7 +188,6 @@ const App: React.FC = () => {
         {status === AnalysisStatus.IDLE && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center animate-fadeIn min-h-[75vh]">
             <div className="hidden md:flex flex-col space-y-6 pt-2 sticky top-24 self-center pl-4">
-               {/* RADICAL CHANGE: Smaller, elegant title */}
                <h1 className="text-3xl font-serif font-light text-chic-deep leading-tight tracking-wide">
                  Onun Zihnini & <br/><span className="italic text-chic-primary font-normal">Kalbini Oku.</span>
                </h1>
@@ -208,16 +208,20 @@ const App: React.FC = () => {
                <div className="bg-white/90 backdrop-blur-xl p-5 md:p-8 rounded-3xl shadow-xl border border-chic-primary/20 relative overflow-visible">
                  
                  <div className="space-y-5">
-                    <div>
+                    <div className="relative">
                       <textarea
                         ref={textareaRef}
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
                         onFocus={() => setIsTextareaFocused(true)}
                         onBlur={() => setIsTextareaFocused(false)}
-                        className="w-full h-32 md:h-36 bg-transparent text-base md:text-lg text-chic-deep placeholder:text-chic-deep/30 resize-none focus:outline-none font-medium leading-relaxed"
+                        className="w-full h-32 md:h-36 bg-transparent text-base md:text-lg text-chic-deep placeholder:text-chic-deep/30 resize-none focus:outline-none font-medium leading-relaxed pr-8"
                         placeholder="İlişkinizden bahsedin... (Örn: 'Bana karşı ilgisizleşti, mesajlarıma geç dönüyor ama buluşunca her şey harika. Burcu kova...')"
                       />
+                      {inputText && (
+                          <button onClick={() => setInputText('')} className="absolute top-0 right-0 text-chic-deep/30 hover:text-red-400 p-1">✕</button>
+                      )}
+                      
                       <div className="flex justify-between items-center mt-2 border-t border-chic-primary/10 pt-2">
                          <div className="flex gap-2 overflow-x-auto no-scrollbar py-1 mask-linear">
                             {PROMPTS.map((p, i) => (
@@ -228,7 +232,8 @@ const App: React.FC = () => {
                       </div>
                       
                       {showEmojiPicker && (
-                        <div className="mt-2 p-2 bg-chic-bg rounded-xl border border-chic-primary/20 animate-slideUp absolute z-20 w-full left-0 shadow-lg">
+                        <div className="mt-2 p-2 bg-chic-bg rounded-xl border border-chic-primary/20 animate-slideUp absolute z-50 w-full left-0 shadow-lg">
+                          <button onClick={() => setShowEmojiPicker(false)} className="absolute top-2 right-2 text-xs opacity-50">✕</button>
                           {EMOJI_CATEGORIES.map((cat, i) => (
                             <div key={i} className="mb-2 last:mb-0">
                               <p className="text-[9px] uppercase tracking-widest text-chic-accent mb-1">{cat.title}</p>
@@ -262,10 +267,10 @@ const App: React.FC = () => {
                         </div>
                         </div>
 
-                        {/* Astro Insight Overlay / Absolute Positioned to NOT shift layout */}
+                        {/* Astro Insight Overlay - Positioned BELOW selects to avoid blocking */}
                         {astroInsight && (
-                            <div className="absolute left-0 right-0 -top-2 transform -translate-y-full bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-xl border border-chic-primary/20 z-10 animate-slideUp">
-                                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-white border-r border-b border-chic-primary/20"></div>
+                            <div className="absolute left-0 right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-xl border border-chic-primary/20 z-40 animate-slideUp pointer-events-none">
+                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-45 w-3 h-3 bg-white border-l border-t border-chic-primary/20"></div>
                                 <div className="flex gap-3 items-start">
                                     <span className="text-xl">✨</span>
                                     <div>
@@ -277,7 +282,7 @@ const App: React.FC = () => {
                         )}
                     </div>
 
-                    <div className="space-y-1">
+                    <div className="space-y-1 pt-2">
                       <label className="text-[9px] uppercase tracking-widest text-chic-accent font-bold">İlişki Durumu</label>
                       <div className="flex flex-wrap gap-2">
                         {RELATIONSHIP_TYPES.map(type => (
@@ -338,11 +343,11 @@ const App: React.FC = () => {
         )}
 
         {status === AnalysisStatus.COMPLETED && result && (
-          <div ref={resultRef} className="animate-slideUp pt-6 px-4 md:px-0">
+          <div className="animate-slideUp pt-2 px-4 md:px-0">
              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12">
                 
                 {/* Sol Panel: Metrikler (Ücretsiz Kısım) */}
-                <div className="md:col-span-4 space-y-6">
+                <div className="md:col-span-4 space-y-4">
                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-chic-primary/10 flex flex-col items-center relative overflow-hidden">
                       <div className="absolute inset-0 bg-floral-pattern opacity-[0.03]"></div>
                       
