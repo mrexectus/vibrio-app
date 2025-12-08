@@ -6,7 +6,7 @@ export const sampleReportContent = `
   <div class="flex flex-col md:flex-row gap-4 mb-6 border-b border-chic-primary/20 pb-6">
       <div class="flex-1">
           <div class="text-[10px] uppercase tracking-[0.2em] text-chic-accent font-bold mb-1">Analiz Dosyası</div>
-          <div class="text-2xl font-serif text-chic-deep">#VIB-2025-X92 <span class="text-xs opacity-50 text-red-500 font-bold">(v4.0 BW)</span></div>
+          <div class="text-2xl font-serif text-chic-deep">#VIB-2025-X92</div>
           <div class="text-xs text-chic-text mt-1 font-medium">Selin (Yengeç) & Mert (Oğlak)</div>
       </div>
       <div class="flex-1 flex flex-col items-end justify-center">
@@ -43,7 +43,7 @@ export const sampleReportContent = `
         <div class="space-y-3">
             <div class="aspect-square rounded-full overflow-hidden relative shadow-xl border-4 border-chic-primary/30 ring-1 ring-chic-primary/20 group mx-auto w-3/4 grayscale">
                 <div class="absolute top-0 right-0 bg-chic-deep text-white text-[8px] px-2 py-1 rounded-bl-xl z-10 font-bold tracking-widest">SİMÜLASYON</div>
-                <img src="https://images.unsplash.com/photo-1529123202150-13f5b5c907d8?q=80&w=600&auto=format&fit=crop&sat=-100" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Yaşlı Eller">
+                <img src="https://images.unsplash.com/photo-1474552226712-ac0f0961a954?q=80&w=600&auto=format&fit=crop&sat=-100" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Yaşlı Eller">
             </div>
              <div class="text-center">
                 <div class="text-xs font-serif font-bold text-chic-deep">2065 (Gelecek)</div>

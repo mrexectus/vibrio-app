@@ -477,13 +477,13 @@ const App: React.FC = () => {
            <div className="bg-white w-full max-w-4xl h-[90vh] overflow-y-auto rounded-3xl relative shadow-2xl" onClick={e => e.stopPropagation()}>
                <button onClick={() => setShowSample(false)} className="absolute top-4 right-4 z-50 w-8 h-8 bg-chic-bg rounded-full flex items-center justify-center text-chic-deep font-bold hover:bg-chic-primary hover:text-white transition-colors">×</button>
                <div className="p-4 md:p-8">
-                 {/* HARDCODED SAMPLE CONTENT INLINE - V10.0 MANUAL FIX */}
+                 {/* HARDCODED SAMPLE CONTENT INLINE - FIXED IMAGES */}
                  <div className="space-y-8 font-sans text-chic-deep">
                     
                     <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-chic-primary/20 pb-6">
                         <div className="flex-1">
                             <div className="text-[10px] uppercase tracking-[0.2em] text-chic-accent font-bold mb-1">Analiz Dosyası</div>
-                            <div className="text-2xl font-serif text-chic-deep">#VIB-2025-X92 <span className="text-xs opacity-50 text-red-500 font-bold">(v10.0 MANUAL FIX)</span></div>
+                            <div className="text-2xl font-serif text-chic-deep">#VIB-2025-X92</div>
                             <div className="text-xs text-chic-text mt-1 font-medium">Selin (Yengeç) & Mert (Oğlak)</div>
                         </div>
                         <div className="flex-1 flex flex-col items-end justify-center">
@@ -519,7 +519,7 @@ const App: React.FC = () => {
                           <div className="space-y-3">
                               <div className="aspect-square rounded-full overflow-hidden relative shadow-xl border-4 border-chic-primary/30 ring-1 ring-chic-primary/20 group mx-auto w-3/4 grayscale">
                                   <div className="absolute top-0 right-0 bg-chic-deep text-white text-[8px] px-2 py-1 rounded-bl-xl z-10 font-bold tracking-widest">SİMÜLASYON</div>
-                                  <img src="https://images.unsplash.com/photo-1529123202150-13f5b5c907d8?q=80&w=600&auto=format&fit=crop&sat=-100" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Yaşlı Eller" />
+                                  <img src="https://images.unsplash.com/photo-1474552226712-ac0f0961a954?q=80&w=600&auto=format&fit=crop&sat=-100" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Yaşlı Eller" />
                               </div>
                                <div className="text-center">
                                   <div className="text-xs font-serif font-bold text-chic-deep">2065 (Gelecek)</div>
