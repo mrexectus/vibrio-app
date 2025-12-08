@@ -20,12 +20,8 @@ const VisualProjection: React.FC<VisualProjectionProps> = ({
     isGenerating = false
 }) => {
   
-  // Logic: 
-  // 1. If generatedImage exists, use it (Real AI)
-  // 2. If generating, use placeholder/userImage with loader
-  // 3. Fallback to a HIGH QUALITY OLD COUPLE WITH FACES instead of generic landscape
-  
-  const displayImage = generatedImage || 'https://images.unsplash.com/photo-1544919982-b61976f0ba43?q=80&w=2000&auto=format&fit=crop';
+  // Update: Using the "Old Couple Walking Away" image to match the sample report consistency
+  const displayImage = generatedImage || 'https://images.unsplash.com/photo-1474176857210-7287d38d27c6?q=80&w=2000&auto=format&fit=crop';
   
   return (
     <div className="w-full bg-white rounded-3xl p-1 shadow-sm border border-chic-primary/10 mt-6 relative overflow-hidden group">
