@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 import VisualProjection from './components/VisualProjection';
 import AstroInsightPanel from './components/AstroInsightPanel';
 import SynergyBadge from './components/SynergyBadge';
+import { sampleReportContent } from './services/sampleData';
 
 const ZODIACS = ["Koç", "Boğa", "İkizler", "Yengeç", "Aslan", "Başak", "Terazi", "Akrep", "Yay", "Oğlak", "Kova", "Balık"];
 
@@ -528,77 +529,10 @@ const App: React.FC = () => {
 
       {showSample && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 md:p-4 bg-chic-deep/30 backdrop-blur-sm" onClick={() => setShowSample(false)}>
-           <div className="bg-white w-full max-w-4xl h-[90vh] overflow-y-auto rounded-3xl relative shadow-2xl" onClick={e => e.stopPropagation()}>
+           <div className="bg-white w-full max-w-5xl h-[90vh] overflow-y-auto rounded-3xl relative shadow-2xl" onClick={e => e.stopPropagation()}>
                <button onClick={() => setShowSample(false)} className="absolute top-4 right-4 z-50 w-8 h-8 bg-chic-bg rounded-full flex items-center justify-center text-chic-deep font-bold hover:bg-chic-primary hover:text-white transition-colors">×</button>
-               <div className="p-4 md:p-8">
-                 {/* HARDCODED SAMPLE CONTENT INLINE - FIXED IMAGES */}
-                 <div className="space-y-8 font-sans text-chic-deep">
-                    
-                    <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-chic-primary/20 pb-6">
-                        <div className="flex-1">
-                            <div className="text-[10px] uppercase tracking-[0.2em] text-chic-accent font-bold mb-1">Analiz Dosyası</div>
-                            <div className="text-2xl font-serif text-chic-deep">#VIB-2025-X92</div>
-                            <div className="text-xs text-chic-text mt-1 font-medium">Selin (Yengeç) & Mert (Oğlak)</div>
-                        </div>
-                        <div className="flex-1 flex flex-col items-end justify-center">
-                            <div className="bg-chic-deep text-white px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-1 shadow-md">
-                              Ruh Eşi Uyumu (%98)
-                            </div>
-                            <div className="text-[9px] text-gray-400">Rapor Tarihi: 08.12.2025</div>
-                        </div>
-                    </div>
-
-                    <div className="bg-white p-6 rounded-2xl border border-chic-primary/20 shadow-sm relative overflow-hidden">
-                       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gray-200 via-gray-400 to-gray-200"></div>
-                       
-                       <h3 className="font-serif text-xl text-chic-deep mb-6 flex items-center gap-2">
-                          <span className="text-2xl">⏳</span> 
-                          <span className="italic">Vibrio Vision: Bağlılık Testi</span>
-                       </h3>
-                       
-                       <div className="grid grid-cols-2 gap-6">
-                          
-                          {/* 1. GÜNCEL HAL (Young Hands BW) */}
-                          <div className="space-y-3">
-                              <div className="aspect-square rounded-full overflow-hidden relative shadow-xl border-4 border-white ring-1 ring-gray-100 group mx-auto w-3/4">
-                                  <img src="https://images.unsplash.com/photo-1494774157365-9e04c6720e47?q=80&w=600&auto=format&fit=crop" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Genç Eller" />
-                              </div>
-                              <div className="text-center">
-                                  <div className="text-xs font-serif font-bold text-chic-deep">2025 (Bugün)</div>
-                                  <div className="text-[9px] text-gray-400 uppercase tracking-widest">Gençlik Enerjisi</div>
-                              </div>
-                          </div>
-
-                          {/* 2. YAŞLANDIRILMIŞ HAL (Old Hands BW) */}
-                          <div className="space-y-3">
-                              <div className="aspect-square rounded-full overflow-hidden relative shadow-xl border-4 border-chic-primary/30 ring-1 ring-chic-primary/20 group mx-auto w-3/4 grayscale">
-                                  <div className="absolute top-0 right-0 bg-chic-deep text-white text-[8px] px-2 py-1 rounded-bl-xl z-10 font-bold tracking-widest">SİMÜLASYON</div>
-                                  <img src="https://images.unsplash.com/photo-1526496690184-c5a894564c48?q=80&w=600&auto=format&fit=crop" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Yaşlı Eller" />
-                              </div>
-                               <div className="text-center">
-                                  <div className="text-xs font-serif font-bold text-chic-deep">2065 (Gelecek)</div>
-                                  <div className="text-[9px] text-gray-400 uppercase tracking-widest">Sarsılmaz Bağ</div>
-                              </div>
-                          </div>
-
-                       </div>
-                       
-                       <div className="mt-6 bg-gray-50 p-4 rounded-xl text-center border border-gray-100">
-                          <p className="font-serif italic text-sm text-gray-600">"Tenler değişir, yüzler yaşlanır ama ellerin birbirini tutuş biçimi asla yalan söylemez. Vibrio, bu çiftin yaşlılıkta bile ellerini bırakmayacağını öngörüyor."</p>
-                       </div>
-                    </div>
-
-                    <div className="prose prose-sm max-w-none text-chic-text text-justify leading-relaxed mt-8">
-                       <h4 className="font-serif text-lg text-chic-deep italic border-b border-chic-primary/20 pb-2 mb-3">Gelecek Projeksiyonu</h4>
-                       <p>
-                         Vibrio algoritmaları, 20 yıl sonrasında sizi sessizce anlaşan, birbirinin cümlelerini tamamlayan ve kalabalık ortamlarda bile sadece göz temasıyla iletişim kurabilen bir çift olarak modelliyor. 
-                       </p>
-                       <p>
-                         <strong>Kritik Uyarı:</strong> Mert'in (Oğlak) işkolik yapısı, 40'lı yaşlarda bir krize yol açabilir. Ancak Selin'in (Yengeç) kapsayıcı şefkati bu fırtınayı dindirecek tek liman olacak.
-                       </p>
-                    </div>
-                 </div>
-               </div>
+               {/* Use the new PremiumReport component for consistent styling and the new structure */}
+               <PremiumReport content={sampleReportContent} />
            </div>
         </div>
       )}
