@@ -1,5 +1,4 @@
 
-
 export const sampleReportContent = `
 <div class="space-y-8 font-sans text-chic-deep">
   
@@ -18,7 +17,7 @@ export const sampleReportContent = `
       </div>
   </div>
 
-  <!-- VISUAL SIMULATION SECTION (The Hook - HANDS CONCEPT) -->
+  <!-- VISUAL SIMULATION SECTION (FACES CONCEPT) -->
   <div class="bg-white p-6 rounded-2xl border border-chic-primary/20 shadow-sm relative overflow-hidden">
      <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gray-200 via-gray-400 to-gray-200"></div>
      
@@ -29,10 +28,10 @@ export const sampleReportContent = `
      
      <div class="grid grid-cols-2 gap-6">
         
-        <!-- 1. GÜNCEL HAL (Young Hands BW) -->
+        <!-- 1. GÜNCEL HAL (Young Couple Face) -->
         <div class="space-y-3">
             <div class="aspect-square rounded-full overflow-hidden relative shadow-xl border-4 border-white ring-1 ring-gray-100 group mx-auto w-3/4">
-                <img src="https://images.unsplash.com/photo-1494774157365-9e04c6720e47?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Genç Eller">
+                <img src="https://images.unsplash.com/photo-1621600411688-4be93cd68504?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Genç Çift">
             </div>
             <div class="text-center">
                 <div class="text-xs font-serif font-bold text-chic-deep">2025 (Bugün)</div>
@@ -40,11 +39,11 @@ export const sampleReportContent = `
             </div>
         </div>
 
-        <!-- 2. YAŞLANDIRILMIŞ HAL (Old Hands BW) -->
+        <!-- 2. YAŞLANDIRILMIŞ HAL (Old Couple Face) -->
         <div class="space-y-3">
-            <div class="aspect-square rounded-full overflow-hidden relative shadow-xl border-4 border-chic-primary/30 ring-1 ring-chic-primary/20 group mx-auto w-3/4 grayscale">
+            <div class="aspect-square rounded-full overflow-hidden relative shadow-xl border-4 border-chic-primary/30 ring-1 ring-chic-primary/20 group mx-auto w-3/4 grayscale-[0.3]">
                 <div class="absolute top-0 right-0 bg-chic-deep text-white text-[8px] px-2 py-1 rounded-bl-xl z-10 font-bold tracking-widest">SİMÜLASYON</div>
-                <img src="https://images.unsplash.com/photo-1526496690184-c5a894564c48?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Yaşlı Eller">
+                <img src="https://images.unsplash.com/photo-1544919982-b61976f0ba43?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Yaşlı Çift">
             </div>
              <div class="text-center">
                 <div class="text-xs font-serif font-bold text-chic-deep">2065 (Gelecek)</div>
@@ -55,7 +54,7 @@ export const sampleReportContent = `
      </div>
      
      <div class="mt-6 bg-gray-50 p-4 rounded-xl text-center border border-gray-100">
-        <p class="font-serif italic text-sm text-gray-600">"Tenler değişir, yüzler yaşlanır ama ellerin birbirini tutuş biçimi asla yalan söylemez. Vibrio, bu çiftin yaşlılıkta bile ellerini bırakmayacağını öngörüyor."</p>
+        <p class="font-serif italic text-sm text-gray-600">"Tenler değişir, saçlar beyazlar ama gözlerdeki o ışıltı asla kaybolmaz. Vibrio, bu çiftin yaşlılıkta bile birbirine aşkla bakacağını öngörüyor."</p>
      </div>
   </div>
 

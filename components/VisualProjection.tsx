@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 
 // HARDCODED SHOPIER LINK AS REQUESTED BY USER
@@ -24,9 +23,9 @@ const VisualProjection: React.FC<VisualProjectionProps> = ({
   // Logic: 
   // 1. If generatedImage exists, use it (Real AI)
   // 2. If generating, use placeholder/userImage with loader
-  // 3. Fallback to userImage or generic placeholder
+  // 3. Fallback to a HIGH QUALITY OLD COUPLE WITH FACES instead of generic landscape
   
-  const displayImage = generatedImage || userImage || 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=2670&auto=format&fit=crop';
+  const displayImage = generatedImage || 'https://images.unsplash.com/photo-1544919982-b61976f0ba43?q=80&w=2000&auto=format&fit=crop';
   
   return (
     <div className="w-full bg-white rounded-3xl p-1 shadow-sm border border-chic-primary/10 mt-6 relative overflow-hidden group">
