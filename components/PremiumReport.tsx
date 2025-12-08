@@ -6,22 +6,29 @@ interface PremiumReportProps { content: string; }
 const PremiumReport: React.FC<PremiumReportProps> = ({ content }) => {
   return (
     <div className="w-full relative">
+       <style>{`
+         @media print {
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .no-print { display: none !important; }
+            body { background: white; }
+         }
+       `}</style>
        <div id="printable-report"
-         className="w-full bg-[#FCFBF9] text-chic-deep p-8 md:p-16 relative shadow-2xl rounded-sm font-sans text-sm leading-relaxed overflow-hidden"
+         className="w-full bg-[#FCFBF9] text-chic-deep p-6 md:p-12 lg:p-16 relative shadow-2xl rounded-sm font-sans text-sm leading-relaxed overflow-hidden print:shadow-none print:p-0"
        >
          {/* Paper Texture & Noise */}
-         <div className="absolute inset-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
+         <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
          
          {/* Watermark */}
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] border-[20px] border-chic-deep/5 rounded-full pointer-events-none z-0"></div>
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[15vw] font-serif font-bold text-chic-deep/5 -rotate-12 pointer-events-none select-none z-0 whitespace-nowrap">
-            VIBRIO
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] h-[70%] border-[20px] border-chic-deep/5 rounded-full pointer-events-none z-0"></div>
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[12vw] font-serif font-bold text-chic-deep/5 -rotate-12 pointer-events-none select-none z-0 whitespace-nowrap">
+            CONFIDENTIAL
          </div>
 
          {/* Header Branding */}
          <div className="relative z-10 flex justify-between items-start border-b-2 border-chic-deep/80 pb-6 mb-10">
             <div>
-                <h1 className="text-4xl font-serif font-bold tracking-tight text-chic-deep">VIBRIO</h1>
+                <h1 className="text-3xl md:text-4xl font-serif font-bold tracking-tight text-chic-deep">VIBRIO</h1>
                 <p className="text-[10px] uppercase tracking-[0.4em] text-chic-deep/60 mt-1 font-medium">Soul Analytics Division</p>
             </div>
             <div className="text-right">
@@ -32,11 +39,7 @@ const PremiumReport: React.FC<PremiumReportProps> = ({ content }) => {
          </div>
 
          {/* Content */}
-         <div className="relative z-10 prose prose-stone max-w-none 
-            prose-headings:font-serif prose-headings:text-chic-deep 
-            prose-p:text-chic-deep/90 prose-p:leading-8 
-            prose-strong:text-chic-deep prose-strong:font-bold
-            prose-li:marker:text-chic-primary"
+         <div className="relative z-10"
            dangerouslySetInnerHTML={{ __html: content }} 
          />
          
@@ -44,11 +47,11 @@ const PremiumReport: React.FC<PremiumReportProps> = ({ content }) => {
          <div className="relative z-10 mt-16 pt-10 border-t border-chic-deep/10 flex flex-col md:flex-row justify-between items-center gap-6">
              <div className="text-center md:text-left">
                  <p className="font-serif italic text-chic-deep/60 text-lg">"Yıldızlar yolu gösterir, yürümek sana kalmıştır."</p>
-                 <p className="text-[9px] uppercase tracking-widest text-chic-deep/30 mt-2">Vibrio Intelligence System v2.5</p>
+                 <p className="text-[9px] uppercase tracking-widest text-chic-deep/30 mt-2">Vibrio Intelligence System v2.5 • Verified Analysis</p>
              </div>
              <div className="w-24 h-24 opacity-80 mix-blend-multiply">
                  {/* Wax Seal / Stamp Effect using CSS/SVG */}
-                 <svg viewBox="0 0 100 100" className="w-full h-full text-red-900/20 rotate-12">
+                 <svg viewBox="0 0 100 100" className="w-full h-full text-red-900/40 rotate-12">
                      <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4 2" />
                      <circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" strokeWidth="1" />
                      <text x="50" y="55" textAnchor="middle" fontSize="14" fontWeight="bold" fill="currentColor" fontFamily="serif">APPROVED</text>
