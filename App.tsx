@@ -106,13 +106,17 @@ const App: React.FC = () => {
   const [socialProof, setSocialProof] = useState<{name: string, location: string} | null>(null);
   const [showSample, setShowSample] = useState(false);
   const [isImageGenerating, setIsImageGenerating] = useState(false);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const topRef = useRef<HTMLDivElement>(null); 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Force scroll to top on mount
+  // CRITICAL FIX: Disable browser's automatic scroll restoration to fix "starts at bottom" issue
   useLayoutEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
     window.scrollTo(0, 0);
   }, []);
 
@@ -151,7 +155,7 @@ const App: React.FC = () => {
     return () => clearInterval(int);
   }, []);
 
-  // SCROLL LOGIC
+  // SCROLL LOGIC FIXED
   useEffect(() => {
     if(status === AnalysisStatus.ANALYZING) {
       const msgs = ["Bilinçaltı Kodları Taranıyor...", "Emoji ve Beden Dili Çözülüyor...", "Gottman Analizi Yapılıyor...", "Gelecek Simülasyonu Hesaplanıyor...", "Karmik Bağlar Hesaplanıyor..."];
@@ -178,21 +182,28 @@ const App: React.FC = () => {
     if(!inputText && !imageFile) { setErrorMsg("Lütfen analiz için bir metin yazın veya fotoğraf yükleyin."); return; }
     
     setErrorMsg(null); 
-    setResult(null); // Clear previous result
+    setResult(null); 
     setStatus(AnalysisStatus.ANALYZING);
+    setIsDemoMode(false);
     
     try {
+      // Analyze relationship
       const data = await analyzeRelationship(inputText, userZodiac, partnerZodiac, relStatus, imageFile);
       
       if (!data) throw new Error("Veri alınamadı.");
+
+      // Check if it's a mock response (Demo Mode)
+      if ((data as any).isMock) {
+        setIsDemoMode(true);
+      }
 
       setResult(data); 
       setStatus(AnalysisStatus.COMPLETED); 
       localStorage.setItem('vibrio_result', JSON.stringify(data));
 
-      if (data.future_visual_description) {
+      // Image generation (skip if mock/demo mode to save quota/time)
+      if (data.future_visual_description && !(data as any).isMock) {
          setIsImageGenerating(true);
-         // Async execution for image, doesn't block UI
          setTimeout(async () => {
             try {
                 const generatedImg = await generateImageProjection(data.future_visual_description!, imageFile);
@@ -262,13 +273,27 @@ const App: React.FC = () => {
             </div>
         )}
 
+        {/* Demo Mode Warning */}
+        {isDemoMode && status === AnalysisStatus.COMPLETED && (
+            <div className="max-w-md mx-auto mt-4 px-4 md:px-0 animate-slideUp z-50 relative mb-4">
+                <div className="bg-orange-50 border border-orange-200 text-orange-700 p-3 rounded-xl shadow-sm flex items-center gap-3">
+                    <span className="text-lg">🚧</span>
+                    <div>
+                        <h4 className="font-bold text-[10px] uppercase tracking-wider">Demo Modu Aktif</h4>
+                        <p className="text-[10px]">API kotası dolu olduğu için örnek bir sonuç gösteriliyor.</p>
+                    </div>
+                </div>
+            </div>
+        )}
+
         {status === AnalysisStatus.IDLE && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-start animate-fadeIn min-h-[85vh]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-start animate-fadeIn">
             
             {/* Left Column: Dynamic Insight Panel */}
             <AstroInsightPanel insight={astroInsight} />
 
-            <div className="w-full flex flex-col justify-center min-h-dvh md:min-h-0 md:justify-start pt-8 md:pt-24 px-2 md:px-0">
+            {/* Right Column: Form - REMOVED min-h-dvh and justify-center to fix layout shifting */}
+            <div className="w-full flex flex-col justify-start pt-8 md:pt-4 px-4 md:px-0">
                <div className="md:hidden text-center mb-6 scale-90"><Logo /></div>
 
                <div className="bg-white/90 backdrop-blur-xl p-5 md:p-8 rounded-[2rem] shadow-xl border border-chic-primary/20 relative overflow-visible transition-all duration-300">

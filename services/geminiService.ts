@@ -133,11 +133,33 @@ export const analyzeRelationship = async (
 
   } catch (error: any) {
     console.error("Gemini Critical Error:", error);
+    
+    // MOCK RESPONSE FALLBACK FOR QUOTA EXCEEDED (429)
+    if (JSON.stringify(error).includes("429") || (error.message && error.message.includes("429")) || (error.message && error.message.includes("quota"))) {
+        console.warn("Quota exceeded, returning mock response for UI demo.");
+        return {
+            vibrio_score: 78,
+            free_comment: "Bu ilişki, derin bir karmik bağa sahip ancak yüzeyde iletişim frekanslarınız çatışıyor. (DEMO MODU)",
+            metrics: {
+                trust: 85,
+                passion: 92,
+                communication: 65,
+                attachment_style: "Kaygılı-Kaçıngan Döngüsü",
+                conflict_style: "Pasif Agresif"
+            },
+            future_visual_description: "A middle aged couple sitting on a porch, holding hands but looking at different directions, peaceful but distant.",
+            premium_report_content: "<h3 class=\"text-xl font-serif text-chic-deep mt-4 mb-2\">Bilinçaltı Analizi (DEMO)</h3><p class=\"mb-2\">API kotanız dolduğu için bu bir simülasyon yanıtıdır. Normalde burada yapay zeka tarafından üretilen derinlemesine analiz yer alacaktır.</p><h3 class=\"text-xl font-serif text-chic-deep mt-4 mb-2\">Gelecek Projeksiyonu</h3><p class=\"mb-2\">İlişkiniz tutkuyla besleniyor ancak güven inşası zaman alacak.</p>",
+            generated_image_base64: null,
+            // @ts-ignore
+            isMock: true
+        };
+    }
+
     let errorMsg = "Analiz sırasında bir hata oluştu.";
     
     if (error.message) {
         if (error.message.includes("API key")) errorMsg = "API Anahtarı geçersiz.";
-        else if (error.message.includes("403")) errorMsg = "Erişim izni yok (403). Location ayarlarını kontrol edin.";
+        else if (error.message.includes("403")) errorMsg = "Erişim izni yok (403).";
         else if (error.message.includes("503")) errorMsg = "Servis şu an yoğun, lütfen tekrar deneyin.";
         else errorMsg = `Hata: ${error.message}`;
     }
