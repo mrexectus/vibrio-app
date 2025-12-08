@@ -1,8 +1,9 @@
 {
-  "name": "vibrio-soul-analytics",
+  "name": "vibrio-relationship-analyst",
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "description": "AI Powered Relationship Analyst",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -11,7 +12,7 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@google/genai": "latest"
+    "@google/genai": "^1.31.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",

@@ -38,6 +38,7 @@ export default {
         'slideUp': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'pulse-soft': 'pulse-soft 3s ease-in-out infinite',
         'spin-slow': 'spin 12s linear infinite',
+        'scan': 'scan 2s linear infinite',
       },
       keyframes: {
         float: {
@@ -55,6 +56,12 @@ export default {
         'pulse-soft': {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.6' },
+        },
+        scan: {
+            '0%': { top: '0%', opacity: '0' },
+            '10%': { opacity: '1' },
+            '90%': { opacity: '1' },
+            '100%': { top: '100%', opacity: '0' },
         }
       }
     },

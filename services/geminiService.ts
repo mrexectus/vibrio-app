@@ -3,7 +3,6 @@ import { GoogleGenAI, Schema, Type } from "@google/genai";
 import { VibrioResponse } from "../types";
 
 // Optimize Image: Resize large images to max 800px width before sending to API
-// This drastically reduces upload time and API processing time.
 const compressImage = async (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -16,7 +15,6 @@ const compressImage = async (file: File): Promise<string> => {
         const MAX_WIDTH = 800;
         const scaleSize = MAX_WIDTH / img.width;
         
-        // If image is small enough, use original dimensions
         const width = scaleSize < 1 ? MAX_WIDTH : img.width;
         const height = scaleSize < 1 ? img.height * scaleSize : img.height;
 
@@ -25,7 +23,6 @@ const compressImage = async (file: File): Promise<string> => {
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, width, height);
         
-        // Compress to JPEG with 0.7 quality
         const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
         const base64Data = dataUrl.split(',')[1];
         resolve(base64Data);
@@ -52,10 +49,10 @@ const responseSchema: Schema = {
       },
       required: ["trust", "passion", "communication", "attachment_style", "conflict_style"],
     },
-    future_visual_description: { type: Type.STRING, description: "Physical description of couple 20 years later." },
+    future_visual_description: { type: Type.STRING, description: "Detailed physical visual prompt description of the couple 20 years later for image generation. Include atmosphere, lighting, and physical aging details. If no image provided, describe a metaphorical representation." },
     premium_report_content: { type: Type.STRING },
   },
-  required: ["vibrio_score", "free_comment", "metrics", "premium_report_content"],
+  required: ["vibrio_score", "free_comment", "metrics", "premium_report_content", "future_visual_description"],
 };
 
 export const analyzeRelationship = async (
@@ -68,7 +65,6 @@ export const analyzeRelationship = async (
   
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-  // Optimized System Instruction for Speed + Depth
   const systemInstruction = `
     Rol: "Vibrio" İlişki Analisti.
     Görev: Metin/Görsel analizi.
@@ -77,6 +73,7 @@ export const analyzeRelationship = async (
     1. DERİNLİK: Jungiyen ve Gottman terimleriyle akademik derinlikte yaz.
     2. HTML: 'premium_report_content' şık HTML olmalı (<h3 class="text-xl font-serif text-chic-deep mt-4 mb-2"></h3>, <p></p>).
     3. İÇERİK: Bilinçaltı, Manipülasyon, 20 Yıl Sonraki Gelecek.
+    4. GÖRSEL PROMPT: 'future_visual_description' alanına, çiftin 20 yıl sonraki halini çizecek bir yapay zeka (midjourney/dall-e tarzı) için İngilizce prompt yaz.
     4. NETLİK: Gereksiz uzatma, yoğun ve çarpıcı ol.
   `;
 
@@ -116,5 +113,60 @@ export const analyzeRelationship = async (
         errorMsg = "API Anahtarı hatası.";
     }
     throw new Error(errorMsg);
+  }
+};
+
+export const generateImageProjection = async (
+  description: string,
+  imageFile?: File | null
+): Promise<string | null> => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const parts: any[] = [];
+
+  // Gelişmiş prompt mühendisliği
+  const prompt = `Create a photorealistic, cinematic shot of the couple described below, set 20 years in the future.
+  The image should look like a high-end photograph taken with a Leica camera, 85mm lens, f/1.4 aperture.
+  Style: Realistic, slightly nostalgic but sharp 8K details, cinematic lighting.
+  Subject Description: ${description}
+  Mood: Emotional, deep connection, mature love.`;
+
+  if (imageFile) {
+    try {
+      const base64Data = await compressImage(imageFile);
+      // Image-to-Image: Kaynak resmi kullan
+      parts.push({ inlineData: { mimeType: 'image/jpeg', data: base64Data } });
+      // Yüz koruma komutunu güçlendirdik
+      parts.push({ text: prompt + " CRITICAL INSTRUCTION: You MUST use the people in the provided image as the source. Preserve their facial identity, ethnicity, and unique features strictly, but age them naturally by 20 years. Keep the composition similar but update the environment to be more mature." });
+    } catch (e) {
+      parts.push({ text: prompt });
+    }
+  } else {
+    // Text-to-Image
+    parts.push({ text: prompt });
+  }
+
+  try {
+    // Görsel üretimi için Gemini 2.5 Flash Image kullanımı
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash-image',
+      contents: { parts },
+      config: {
+        // En-boy oranını UI'daki çerçeveye (4:3) uyacak şekilde ayarlıyoruz.
+        imageConfig: { aspectRatio: '4:3' }
+      }
+    });
+
+    // Yanıtın içinde resim verisi arama
+    if (response.candidates?.[0]?.content?.parts) {
+      for (const part of response.candidates[0].content.parts) {
+        if (part.inlineData) {
+          return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+        }
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error("Image Gen Error:", error);
+    return null; 
   }
 };
