@@ -477,13 +477,13 @@ const App: React.FC = () => {
            <div className="bg-white w-full max-w-4xl h-[90vh] overflow-y-auto rounded-3xl relative shadow-2xl" onClick={e => e.stopPropagation()}>
                <button onClick={() => setShowSample(false)} className="absolute top-4 right-4 z-50 w-8 h-8 bg-chic-bg rounded-full flex items-center justify-center text-chic-deep font-bold hover:bg-chic-primary hover:text-white transition-colors">×</button>
                <div className="p-4 md:p-8">
-                 {/* HARDCODED SAMPLE CONTENT INLINE - V9.0 MANUAL */}
+                 {/* HARDCODED SAMPLE CONTENT INLINE - V10.0 MANUAL FIX */}
                  <div className="space-y-8 font-sans text-chic-deep">
                     
                     <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-chic-primary/20 pb-6">
                         <div className="flex-1">
                             <div className="text-[10px] uppercase tracking-[0.2em] text-chic-accent font-bold mb-1">Analiz Dosyası</div>
-                            <div className="text-2xl font-serif text-chic-deep">#VIB-2025-X92 <span className="text-xs opacity-50 text-red-500 font-bold">(v9.0 MANUAL)</span></div>
+                            <div className="text-2xl font-serif text-chic-deep">#VIB-2025-X92 <span className="text-xs opacity-50 text-red-500 font-bold">(v10.0 MANUAL FIX)</span></div>
                             <div className="text-xs text-chic-text mt-1 font-medium">Selin (Yengeç) & Mert (Oğlak)</div>
                         </div>
                         <div className="flex-1 flex flex-col items-end justify-center">
@@ -553,3 +553,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+
