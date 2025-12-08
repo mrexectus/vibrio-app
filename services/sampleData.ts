@@ -22,56 +22,7 @@ export const sampleReportContent = `
       </div>
   </div>
 
-  <!-- SECTION 1: VISUAL PROJECTION (FACES VISIBLE) -->
-  <div class="bg-gradient-to-br from-[#FDFBF7] to-white p-1 rounded-3xl shadow-sm border border-chic-primary/10 mb-8">
-     <div class="bg-white rounded-[20px] p-6 relative overflow-hidden">
-         <!-- Watermark -->
-         <div class="absolute top-0 right-0 opacity-[0.03] text-9xl font-serif pointer-events-none">V</div>
-         
-         <div class="flex items-center gap-3 mb-6">
-            <div class="w-8 h-8 rounded-full bg-chic-primary/10 flex items-center justify-center text-chic-primary">⏳</div>
-            <div>
-                <h3 class="text-sm font-bold uppercase tracking-widest text-chic-deep">Vibrio Vision™</h3>
-                <p class="text-[10px] text-gray-400">Yapay Zeka Destekli Yaşlandırma Simülasyonu</p>
-            </div>
-         </div>
-
-         <div class="grid grid-cols-2 gap-4 md:gap-8">
-            <!-- YOUNG COUPLE -->
-            <div class="group cursor-pointer">
-                <div class="aspect-[4/5] rounded-2xl overflow-hidden relative shadow-lg border border-chic-primary/10">
-                    <img src="https://images.unsplash.com/photo-1516585427167-18e431cb6975?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover object-top transition-transform duration-1000 group-hover:scale-110" alt="Genç Çift">
-                    <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
-                        <span class="text-white text-xs font-serif italic">2025 (Şimdi)</span>
-                    </div>
-                </div>
-                <div class="mt-2 text-center">
-                    <span class="text-[9px] uppercase tracking-widest text-chic-accent">Tutkunun Zirvesi</span>
-                </div>
-            </div>
-
-            <!-- OLD COUPLE -->
-            <div class="group cursor-pointer">
-                <div class="aspect-[4/5] rounded-2xl overflow-hidden relative shadow-lg border border-chic-primary/10 grayscale-[0.2]">
-                    <div class="absolute top-2 right-2 bg-white/90 backdrop-blur text-chic-deep text-[8px] px-2 py-1 rounded font-bold tracking-widest z-10 shadow-sm">AI PROJECTION</div>
-                    <img src="https://images.unsplash.com/photo-1526662097318-6c0b39f4007f?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover object-top transition-transform duration-1000 group-hover:scale-110" alt="Yaşlı Çift">
-                    <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
-                        <span class="text-white text-xs font-serif italic">2065 (Gelecek)</span>
-                    </div>
-                </div>
-                <div class="mt-2 text-center">
-                    <span class="text-[9px] uppercase tracking-widest text-chic-accent">Sarsılmaz Yol Arkadaşlığı</span>
-                </div>
-            </div>
-         </div>
-         
-         <div class="mt-6 p-4 bg-chic-bg rounded-xl border border-chic-primary/5 text-center">
-            <p class="font-serif italic text-sm text-chic-deep/80">"Yüzlerindeki kırışıklıklar, birlikte ne kadar çok güldüklerinin haritası gibi. Vibrio algoritmaları, bu çiftin yaşlılıkta bile göz temasını asla kaybetmeyeceğini öngörüyor."</p>
-         </div>
-     </div>
-  </div>
-
-  <!-- SECTION 2: ASTRO & NUMEROLOGY DASHBOARD -->
+  <!-- SECTION 2: ASTRO & NUMEROLOGY DASHBOARD (NOW THE MAIN VISUAL) -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       
       <!-- LEFT: STAR CHART VISUALIZATION -->

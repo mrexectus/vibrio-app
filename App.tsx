@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect, useMemo, useLayoutEffect } from 'react';
-import { analyzeRelationship, generateImageProjection } from './services/geminiService';
+import { analyzeRelationship } from './services/geminiService';
 import { AnalysisStatus, VibrioResponse } from './types';
 import VibrioGauge from './components/VibrioGauge';
 import PremiumReport from './components/PremiumReport';
@@ -8,7 +8,6 @@ import RadarChart from './components/RadarChart';
 import Paywall from './components/Paywall'; 
 import Logo from './components/Logo';
 import Footer from './components/Footer';
-import VisualProjection from './components/VisualProjection';
 import AstroInsightPanel from './components/AstroInsightPanel';
 import SynergyBadge from './components/SynergyBadge';
 import { sampleReportContent } from './services/sampleData';
@@ -106,7 +105,6 @@ const App: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [socialProof, setSocialProof] = useState<{name: string, location: string} | null>(null);
   const [showSample, setShowSample] = useState(false);
-  const [isImageGenerating, setIsImageGenerating] = useState(false);
   const [isDemoMode, setIsDemoMode] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -159,7 +157,7 @@ const App: React.FC = () => {
   // SCROLL LOGIC FIXED
   useEffect(() => {
     if(status === AnalysisStatus.ANALYZING) {
-      const msgs = ["Bilinçaltı Kodları Taranıyor...", "Emoji ve Beden Dili Çözülüyor...", "Gottman Analizi Yapılıyor...", "Gelecek Simülasyonu Hesaplanıyor...", "Karmik Bağlar Hesaplanıyor..."];
+      const msgs = ["Bilinçaltı Kodları Taranıyor...", "WhatsApp/DM Konuşmaları Okunuyor...", "Emoji ve Beden Dili Çözülüyor...", "Gottman Analizi Yapılıyor...", "Karmik Bağlar Hesaplanıyor..."];
       let i=0; setLoadingMsg(msgs[0]);
       const t = setInterval(() => { i=(i+1)%msgs.length; setLoadingMsg(msgs[i]); }, 2500);
       return () => clearInterval(t);
@@ -201,25 +199,6 @@ const App: React.FC = () => {
       setResult(data); 
       setStatus(AnalysisStatus.COMPLETED); 
       localStorage.setItem('vibrio_result', JSON.stringify(data));
-
-      // Image generation (skip if mock/demo mode to save quota/time)
-      if (data.future_visual_description && !(data as any).isMock) {
-         setIsImageGenerating(true);
-         setTimeout(async () => {
-            try {
-                const generatedImg = await generateImageProjection(data.future_visual_description!, imageFile);
-                if (generatedImg) {
-                    const updatedData = { ...data, generated_image_base64: generatedImg };
-                    setResult(updatedData);
-                    localStorage.setItem('vibrio_result', JSON.stringify(updatedData));
-                }
-            } catch (err) {
-                console.error("BG Image gen error", err);
-            } finally {
-                setIsImageGenerating(false);
-            }
-         }, 100);
-      }
 
     } catch(e: any) { 
         setErrorMsg(e.message || "Bilinmeyen hata"); 
@@ -293,7 +272,7 @@ const App: React.FC = () => {
             {/* Left Column: Dynamic Insight Panel */}
             <AstroInsightPanel insight={astroInsight} />
 
-            {/* Right Column: Form - REMOVED min-h-dvh and justify-center to fix layout shifting */}
+            {/* Right Column: Form */}
             <div className="w-full flex flex-col justify-start pt-8 md:pt-4 px-4 md:px-0">
                <div className="md:hidden text-center mb-6 scale-90"><Logo /></div>
 
@@ -308,7 +287,7 @@ const App: React.FC = () => {
                         onFocus={() => setIsTextareaFocused(true)}
                         onBlur={() => setIsTextareaFocused(false)}
                         className="w-full h-32 md:h-40 bg-transparent text-base text-chic-deep placeholder:text-chic-deep/30 resize-none focus:outline-none font-medium leading-relaxed pr-8"
-                        placeholder="İlişkinizden bahsedin... (Örn: 'Bana karşı ilgisizleşti, mesajlarıma geç dönüyor ama buluşunca her şey harika. Burcu kova...')"
+                        placeholder="İlişkinizden bahsedin veya bir WhatsApp konuşması/fotoğraf yükleyin... (Örn: 'Bana karşı ilgisizleşti, mesajlarıma geç dönüyor...')"
                       />
                       {inputText && (
                           <button onClick={() => setInputText('')} className="absolute top-0 right-0 text-chic-deep/30 hover:text-red-400 p-1">✕</button>
@@ -469,14 +448,6 @@ const App: React.FC = () => {
                       </div>
                    </div>
 
-                   <VisualProjection 
-                      description={result.future_visual_description} 
-                      isUnlocked={isUnlocked} 
-                      userImage={imagePreviewUrl} 
-                      generatedImage={result.generated_image_base64}
-                      isGenerating={isImageGenerating}
-                   />
-
                    {isUnlocked && (
                      <button onClick={handleShare} className="w-full py-3 border border-chic-primary/30 rounded-xl text-chic-deep uppercase text-[10px] tracking-[0.2em] hover:bg-chic-primary hover:text-white transition-all">
                         Sonucu Paylaş
@@ -531,7 +502,6 @@ const App: React.FC = () => {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 md:p-4 bg-chic-deep/30 backdrop-blur-sm" onClick={() => setShowSample(false)}>
            <div className="bg-white w-full max-w-5xl h-[90vh] overflow-y-auto rounded-3xl relative shadow-2xl" onClick={e => e.stopPropagation()}>
                <button onClick={() => setShowSample(false)} className="absolute top-4 right-4 z-50 w-8 h-8 bg-chic-bg rounded-full flex items-center justify-center text-chic-deep font-bold hover:bg-chic-primary hover:text-white transition-colors">×</button>
-               {/* Use the new PremiumReport component for consistent styling and the new structure */}
                <PremiumReport content={sampleReportContent} />
            </div>
         </div>

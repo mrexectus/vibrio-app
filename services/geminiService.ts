@@ -52,10 +52,9 @@ const responseSchema: Schema = {
       },
       required: ["trust", "passion", "communication", "attachment_style", "conflict_style"],
     },
-    future_visual_description: { type: Type.STRING, description: "Detailed physical visual prompt description of the couple 20 years later." },
     premium_report_content: { type: Type.STRING },
   },
-  required: ["vibrio_score", "free_comment", "metrics", "premium_report_content", "future_visual_description"],
+  required: ["vibrio_score", "free_comment", "metrics", "premium_report_content"],
 };
 
 export const analyzeRelationship = async (
@@ -75,14 +74,21 @@ export const analyzeRelationship = async (
 
   const systemInstruction = `
     Rol: "Vibrio" İlişki Analisti.
-    Görev: Metin/Görsel analizi.
+    Görev: Metin ve Görsel analizi.
     Dil: Türkçe.
     
-    Kurallar:
-    1. DERİNLİK: Jungiyen ve Gottman terimleriyle akademik derinlikte yaz.
-    2. HTML FORMATI: 'premium_report_content' alanı SADECE HTML string içermelidir. Başlıklar için <h3 class="text-xl font-serif text-chic-deep mt-4 mb-2"></h3>, paragraflar için <p class="mb-2"></p> kullan.
-    3. İÇERİK: Bilinçaltı, Manipülasyon, 20 Yıl Sonraki Gelecek başlıklarını kesinlikle içermeli.
-    4. JSON: Yanıt SADECE geçerli bir JSON objesi olmalıdır. Markdown (json \`\`\`) kullanma.
+    ANALİZ KURALLARI:
+    1. GÖRSEL ANALİZ (Eğer görsel varsa):
+       - EKRAN GÖRÜNTÜSÜ (WhatsApp/DM): Konuşmayı oku. Satır aralarındaki pasif-agresifliği, soğukluğu, "görüldü atma" enerjisini veya manipülasyonu (gaslighting) tespit et. Kimin daha çok çabaladığını analiz et.
+       - KİŞİ FOTOĞRAFI: Yüz hatları, bakışlar (keskin mi, kaçamak mı), beden dili ve enerji üzerinden fizyonomi analizi yap. "Gözlerinde güvenilmez bir ifade var" veya "Duruşu narsistik özellikler taşıyor" gibi spesifik ol.
+    
+    2. METİN ANALİZİ:
+       - Jungiyen ve Gottman terimleriyle akademik derinlikte yaz.
+    
+    3. FORMAT:
+       - HTML FORMATI: 'premium_report_content' alanı SADECE HTML string içermelidir. Başlıklar için <h3 class="text-xl font-serif text-chic-deep mt-4 mb-2"></h3>, paragraflar için <p class="mb-2"></p> kullan.
+       - İÇERİK: Bilinçaltı, Manipülasyon, 20 Yıl Sonraki Gelecek başlıklarını kesinlikle içermeli.
+       - JSON: Yanıt SADECE geçerli bir JSON objesi olmalıdır. Markdown (json \`\`\`) kullanma.
   `;
 
   const statusContext = relationshipStatus ? `İlişki: ${relationshipStatus}` : "";
@@ -147,9 +153,7 @@ export const analyzeRelationship = async (
                 attachment_style: "Kaygılı-Kaçıngan Döngüsü",
                 conflict_style: "Pasif Agresif"
             },
-            future_visual_description: "A middle aged couple sitting on a porch, holding hands but looking at different directions, peaceful but distant.",
             premium_report_content: "<h3 class=\"text-xl font-serif text-chic-deep mt-4 mb-2\">Bilinçaltı Analizi (DEMO)</h3><p class=\"mb-2\">API kotanız dolduğu için bu bir simülasyon yanıtıdır. Normalde burada yapay zeka tarafından üretilen derinlemesine analiz yer alacaktır.</p><h3 class=\"text-xl font-serif text-chic-deep mt-4 mb-2\">Gelecek Projeksiyonu</h3><p class=\"mb-2\">İlişkiniz tutkuyla besleniyor ancak güven inşası zaman alacak.</p>",
-            generated_image_base64: null,
             // @ts-ignore
             isMock: true
         };
@@ -165,51 +169,5 @@ export const analyzeRelationship = async (
     }
     
     throw new Error(errorMsg);
-  }
-};
-
-export const generateImageProjection = async (
-  description: string,
-  imageFile?: File | null
-): Promise<string | null> => {
-  if (!process.env.API_KEY) return null;
-  
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  const parts: any[] = [];
-
-  const prompt = `Cinematic portrait, 20 years later envisioning: ${description}. Photorealistic, 8k, highly detailed.`;
-
-  if (imageFile) {
-    try {
-      const base64Data = await compressImage(imageFile);
-      parts.push({ inlineData: { mimeType: 'image/jpeg', data: base64Data } });
-      parts.push({ text: prompt + " Preserve facial identity strictly but age them 20 years." });
-    } catch (e) {
-      parts.push({ text: prompt });
-    }
-  } else {
-    parts.push({ text: prompt });
-  }
-
-  try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image', // Fallback to flash-image as it is more stable for general users without paid plans setup
-      contents: { parts },
-      config: {
-        imageConfig: { aspectRatio: '4:3' }
-      }
-    });
-
-    if (response.candidates?.[0]?.content?.parts) {
-      for (const part of response.candidates[0].content.parts) {
-        if (part.inlineData) {
-          return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
-        }
-      }
-    }
-    return null;
-  } catch (error) {
-    console.warn("Image Gen Error (Ignorable):", error);
-    return null; 
   }
 };
