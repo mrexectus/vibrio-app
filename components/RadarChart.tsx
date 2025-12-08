@@ -31,25 +31,8 @@ const RadarChart: React.FC<RadarChartProps> = ({ trust, passion, communication }
 
   const points = axes.map(axis => getCoordinates(axis.value, axis.angle));
 
-  // Helper to create a curved path (quadratic-like bezier through points)
-  // For a triangle, we can use simple quadratic curves between midpoints, or just curve to points
-  // Simple Catmull-Rom or Quadratic estimation for 3 points:
+  // Improved organic curve logic
   const createCurvedPath = (pts: {x:number, y:number}[]) => {
-     // For a blobby triangle, we curve from p0 -> p1 -> p2 -> p0
-     // We can control the 'roundness' by pulling control points towards the center or perpendicular
-     
-     // Let's use Q (Quadratic Bezier). 
-     // We need to find a control point between p0 and p1 that puffs out if values are high
-     
-     const path = [
-       `M ${pts[0].x} ${pts[0].y}`,
-       `Q ${center} ${center} ${pts[1].x} ${pts[1].y}`, // This pulls inward, making a star shape. We want Blob.
-     ];
-
-     // Better approach for organic blob: 
-     // Use "L" but with rounded corners? No, user wants organic weight.
-     // Let's try Q with control points calculated to be slightly outside the straight line
-     
      let d = `M ${pts[0].x} ${pts[0].y}`;
      for (let i = 0; i < pts.length; i++) {
         const pStart = pts[i];
@@ -59,20 +42,23 @@ const RadarChart: React.FC<RadarChartProps> = ({ trust, passion, communication }
         const midX = (pStart.x + pEnd.x) / 2;
         const midY = (pStart.y + pEnd.y) / 2;
         
-        // Push midpoint away from center slightly to create curve
-        // The push amount depends on the average value of the two points
+        // Dynamic Push factor logic:
+        // Calculate average value of the two points
         const valStart = axes[i].value;
         const valEnd = axes[(i+1)%3].value;
         const avgVal = (valStart + valEnd) / 2;
         
-        // Push factor: Higher value = more curve outward
-        const pushFactor = avgVal > 70 ? 1.15 : 1.05; 
+        // Exponential push: If scores are high, push outline WAY out to make it look "fuller"
+        // 1.0 is a straight line. 
+        // If average is 100, we want a nice round curve (e.g. 1.3)
+        // If average is 20, we want it skinny (e.g. 1.05)
+        const pushFactor = 1 + (avgVal / 100) * 0.35; 
+
         const cpX = center + (midX - center) * pushFactor;
         const cpY = center + (midY - center) * pushFactor;
         
         d += ` Q ${cpX} ${cpY} ${pEnd.x} ${pEnd.y}`;
      }
-     
      return d;
   };
 
@@ -135,7 +121,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ trust, passion, communication }
         d={blobPath} 
         fill="url(#blobGradient)" 
         stroke="#463F3A" 
-        strokeWidth="0" // No border for softer look, or thin one
+        strokeWidth="0" 
         filter="url(#blobGlow)"
         className="transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
       />

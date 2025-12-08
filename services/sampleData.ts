@@ -40,7 +40,7 @@ export const sampleReportContent = `
             <!-- YOUNG COUPLE - FACE VISIBLE -->
             <div class="group cursor-pointer">
                 <div class="aspect-[4/5] rounded-2xl overflow-hidden relative shadow-lg border border-chic-primary/10">
-                    <img src="https://images.unsplash.com/photo-1516585427167-9f4af9627e6c?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Genç Çift">
+                    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Genç Çift">
                     <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
                         <span class="text-white text-xs font-serif italic">2025 (Şimdi)</span>
                     </div>
@@ -54,7 +54,7 @@ export const sampleReportContent = `
             <div class="group cursor-pointer">
                 <div class="aspect-[4/5] rounded-2xl overflow-hidden relative shadow-lg border border-chic-primary/10 grayscale-[0.2]">
                     <div class="absolute top-2 right-2 bg-white/90 backdrop-blur text-chic-deep text-[8px] px-2 py-1 rounded font-bold tracking-widest z-10 shadow-sm">AI PROJECTION</div>
-                    <img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Yaşlı Çift">
+                    <img src="https://images.unsplash.com/photo-1526662092594-e98c1e35652b?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Yaşlı Çift">
                     <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
                         <span class="text-white text-xs font-serif italic">2065 (Gelecek)</span>
                     </div>
