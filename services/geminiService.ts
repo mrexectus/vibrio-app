@@ -73,22 +73,32 @@ export const analyzeRelationship = async (
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   const systemInstruction = `
-    Rol: "Vibrio" İlişki Analisti.
-    Görev: Metin ve Görsel analizi.
-    Dil: Türkçe.
+    Rol: Sen "Vibrio", dünyanın en gelişmiş Jungiyen İlişki Analistisin. 
+    Tone: Akademik, Mistik, Otoriter ama Şefkatli. Asla yüzeysel konuşma.
+    
+    GÖREV:
+    Kullanıcıdan gelen metni veya görseli analiz et ve JSON formatında yanıt ver.
+    
+    ÖNEMLİ: 'premium_report_content' alanı SADECE ve SADECE HTML kodu içermelidir.
+    Bu HTML, CSS sınıfları (Tailwind) kullanılarak görselleştirilmiş, Barlar, Grafikler ve Kutucuklar içermelidir.
+    Düz yazı yazma. Görselleştir.
+
+    HTML İÇERİK KURALLARI (premium_report_content):
+    1.  **Uzunluk:** En az 600 kelime olmalı.
+    2.  **Yapı:**
+        -   **Bölüm 1: Psiko-Dinamik Profil:** İlişkinin röntgeni.
+        -   **Bölüm 2: Bilinçaltı Kodları (Görsel Bar Kullan):** Kıskançlık, Sadakat, Manipülasyon seviyelerini HTML progress bar ile göster.
+            *Örnek:* <div class="w-full bg-gray-100 rounded-full h-2 mb-4"><div class="bg-chic-primary h-2 rounded-full" style="width: 75%"></div></div>
+        -   **Bölüm 3: Gelecek Simülasyonu (Timeline):** 1. Yıl, 5. Yıl ve 20. Yıl için tahminler.
+        -   **Bölüm 4: Toksik Alarm:** Varsa kırmızı bayraklar.
+    3.  **Stil:** Başlıklar için <h3 class="text-xl font-serif font-bold text-chic-deep mt-6 mb-3 border-b border-chic-primary/20 pb-2"></h3> kullan. Vurgular için <strong class="text-chic-primary"></strong> kullan.
     
     ANALİZ KURALLARI:
-    1. GÖRSEL ANALİZ (Eğer görsel varsa):
-       - EKRAN GÖRÜNTÜSÜ (WhatsApp/DM): Konuşmayı oku. Satır aralarındaki pasif-agresifliği, soğukluğu, "görüldü atma" enerjisini veya manipülasyonu (gaslighting) tespit et. Kimin daha çok çabaladığını analiz et.
-       - KİŞİ FOTOĞRAFI: Yüz hatları, bakışlar (keskin mi, kaçamak mı), beden dili ve enerji üzerinden fizyonomi analizi yap. "Gözlerinde güvenilmez bir ifade var" veya "Duruşu narsistik özellikler taşıyor" gibi spesifik ol.
+    -   Eğer fotoğraf varsa: Yüz ifadelerine, mikro mimiklere ve duruşa odaklan. "Gözleri kaçırıyor", "Dudak kenarında küçümseme var" gibi detay ver.
+    -   Eğer metin/ss varsa: Satır aralarını oku. Pasif agresifliği yakala.
     
-    2. METİN ANALİZİ:
-       - Jungiyen ve Gottman terimleriyle akademik derinlikte yaz.
-    
-    3. FORMAT:
-       - HTML FORMATI: 'premium_report_content' alanı SADECE HTML string içermelidir. Başlıklar için <h3 class="text-xl font-serif text-chic-deep mt-4 mb-2"></h3>, paragraflar için <p class="mb-2"></p> kullan.
-       - İÇERİK: Bilinçaltı, Manipülasyon, 20 Yıl Sonraki Gelecek başlıklarını kesinlikle içermeli.
-       - JSON: Yanıt SADECE geçerli bir JSON objesi olmalıdır. Markdown (json \`\`\`) kullanma.
+    ÇIKTI FORMATI:
+    Sadece JSON. Markdown (json \`\`\`) kullanma.
   `;
 
   const statusContext = relationshipStatus ? `İlişki: ${relationshipStatus}` : "";
@@ -117,14 +127,10 @@ export const analyzeRelationship = async (
     });
 
     let jsonString = response.text || '{}';
-    
-    // Robust cleanup
     jsonString = jsonString.replace(/```json/g, '').replace(/```/g, '').trim();
     
-    // Sometimes models add text before/after the JSON
     const firstBrace = jsonString.indexOf('{');
     const lastBrace = jsonString.lastIndexOf('}');
-    
     if (firstBrace !== -1 && lastBrace !== -1) {
         jsonString = jsonString.substring(firstBrace, lastBrace + 1);
     }
@@ -140,7 +146,6 @@ export const analyzeRelationship = async (
   } catch (error: any) {
     console.error("Gemini Critical Error:", error);
     
-    // MOCK RESPONSE FALLBACK FOR QUOTA EXCEEDED (429)
     if (JSON.stringify(error).includes("429") || (error.message && error.message.includes("429")) || (error.message && error.message.includes("quota"))) {
         console.warn("Quota exceeded, returning mock response for UI demo.");
         return {
@@ -153,14 +158,48 @@ export const analyzeRelationship = async (
                 attachment_style: "Kaygılı-Kaçıngan Döngüsü",
                 conflict_style: "Pasif Agresif"
             },
-            premium_report_content: "<h3 class=\"text-xl font-serif text-chic-deep mt-4 mb-2\">Bilinçaltı Analizi (DEMO)</h3><p class=\"mb-2\">API kotanız dolduğu için bu bir simülasyon yanıtıdır. Normalde burada yapay zeka tarafından üretilen derinlemesine analiz yer alacaktır.</p><h3 class=\"text-xl font-serif text-chic-deep mt-4 mb-2\">Gelecek Projeksiyonu</h3><p class=\"mb-2\">İlişkiniz tutkuyla besleniyor ancak güven inşası zaman alacak.</p>",
+            premium_report_content: `
+            <div class="space-y-6">
+                <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-xl text-yellow-800 text-sm">
+                    <strong>⚠️ DEMO MODU AKTİF</strong><br/>
+                    Google API kotanız dolduğu için bu örnek bir analizdir. Gerçek kullanımda yapay zeka buraya kişiselleştirilmiş, 600+ kelimelik detaylı bir rapor yazar.
+                </div>
+                
+                <h3 class="text-xl font-serif font-bold text-chic-deep mt-6 mb-3 border-b border-chic-primary/20 pb-2">1. Psiko-Dinamik Profil</h3>
+                <p>İlişkinizdeki temel dinamik <strong>"Yaralı Şifacı"</strong> arketipine dayanıyor. Birbirinizin çocukluk travmalarını tetikliyor, ancak aynı zamanda iyileştirme potansiyeli taşıyorsunuz. Tutku (Skor: 92) bu ilişkinin yakıtı, ancak iletişim (Skor: 65) motoru tekletiyor.</p>
+                
+                <h3 class="text-xl font-serif font-bold text-chic-deep mt-6 mb-3 border-b border-chic-primary/20 pb-2">2. Bilinçaltı Kodları</h3>
+                
+                <div class="mb-4">
+                    <div class="flex justify-between text-xs uppercase font-bold text-chic-deep/60 mb-1">
+                        <span>Manipülasyon Riski</span>
+                        <span>%45 (Orta)</span>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-2">
+                        <div class="bg-orange-400 h-2 rounded-full" style="width: 45%"></div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                     <div class="flex justify-between text-xs uppercase font-bold text-chic-deep/60 mb-1">
+                        <span>Cinsel Çekim</span>
+                        <span>%92 (Çok Yüksek)</span>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-2">
+                        <div class="bg-red-400 h-2 rounded-full" style="width: 92%"></div>
+                    </div>
+                </div>
+
+                 <h3 class="text-xl font-serif font-bold text-chic-deep mt-6 mb-3 border-b border-chic-primary/20 pb-2">3. Gelecek Simülasyonu</h3>
+                 <p>Önümüzdeki 6 ay içinde bir güç savaşı yaşanacak. Eğer "ben" yerine "biz" demeyi öğrenirseniz, bu ilişki 20 yıl sürecek bir ortaklığa dönüşebilir.</p>
+            </div>
+            `,
             // @ts-ignore
             isMock: true
         };
     }
 
     let errorMsg = "Analiz sırasında bir hata oluştu.";
-    
     if (error.message) {
         if (error.message.includes("API key")) errorMsg = "API Anahtarı geçersiz.";
         else if (error.message.includes("403")) errorMsg = "Erişim izni yok (403).";

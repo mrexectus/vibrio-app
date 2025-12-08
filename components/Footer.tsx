@@ -6,8 +6,29 @@ const ContactForm: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = `Vibrio İletişim: ${formData.name}`;
-    const body = `Gönderen: ${formData.name} (${formData.email})\n\nMesaj:\n${formData.message}`;
+    
+    // Professional Ticket Format
+    const ticketId = Math.floor(1000 + Math.random() * 9000);
+    const subject = `[Ticket #${ticketId}] Vibrio Destek Talebi: ${formData.name}`;
+    
+    const body = `
+Sayın Vibrio Destek Ekibi,
+
+Aşağıdaki konuda desteğinizi rica ederim.
+
+Gönderen Bilgileri:
+------------------------------------------------
+Ad Soyad: ${formData.name}
+E-posta: ${formData.email}
+------------------------------------------------
+
+Mesaj:
+${formData.message}
+
+Saygılarımla,
+${formData.name}
+    `.trim();
+
     window.location.href = `mailto:support@vibrio.info?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
@@ -43,14 +64,14 @@ const ContactForm: React.FC = () => {
           value={formData.message}
           onChange={e => setFormData({...formData, message: e.target.value})}
           className="w-full bg-chic-bg p-3 rounded-xl border border-chic-primary/20 focus:border-chic-primary outline-none text-sm text-chic-deep placeholder:text-chic-deep/30 resize-none transition-colors"
-          placeholder="Mesajınız..."
+          placeholder="Sorunuzu detaylı bir şekilde yazınız..."
         />
       </div>
       <button type="submit" className="w-full py-3 bg-chic-deep text-white font-bold rounded-xl uppercase text-[10px] tracking-[0.2em] hover:bg-chic-deep/90 transition-colors shadow-md active:scale-[0.98]">
-        E-posta Oluştur
+        Talebi Gönder ✉️
       </button>
       <p className="text-[9px] text-center text-gray-400 mt-2">
-        Bu işlem varsayılan e-posta uygulamanızı açacaktır.
+        Cihazınızdaki varsayılan e-posta uygulaması açılacaktır.
       </p>
     </form>
   );
@@ -65,9 +86,9 @@ const Footer: React.FC = () => {
     <>
       <footer className="py-8 text-center border-t border-chic-accent/10 bg-white/50 backdrop-blur-sm mt-auto">
         <div className="flex justify-center gap-6 mb-4 text-[10px] uppercase tracking-widest font-medium text-gray-400">
-          <button onClick={() => openModal('Gizlilik', <p className="text-justify leading-relaxed font-sans text-chic-text">Verileriniz anonim olarak işlenir ve kaydedilmez. Yapay zeka analizleri için gönderilen metin ve görseller işlem bittikten sonra saklanmaz.</p>)} className="hover:text-chic-primary transition-colors">Gizlilik</button>
-          <button onClick={() => openModal('Koşullar', <p className="text-justify leading-relaxed font-sans text-chic-text">Bu hizmet eğlence amaçlıdır. Sunulan analizler profesyonel psikolojik veya ilişki tavsiyesi yerine geçmez.</p>)} className="hover:text-chic-primary transition-colors">Kullanım Koşulları</button>
-          <button onClick={() => openModal('İletişim', <ContactForm />)} className="hover:text-chic-primary transition-colors">İletişim</button>
+          <button onClick={() => openModal('Gizlilik Politikası', <p className="text-justify leading-relaxed font-sans text-chic-text text-sm">Vibrio, kullanıcı gizliliğine en üst düzeyde önem verir. Analiz için girilen metinler ve yüklenen fotoğraflar, yalnızca o anki analiz işlemi için Google AI sunucularına iletilir ve işlem tamamlandıktan sonra sunucularımızda saklanmaz. Verileriniz üçüncü taraflarla paylaşılmaz. Anonim kullanım esastır.</p>)} className="hover:text-chic-primary transition-colors">Gizlilik</button>
+          <button onClick={() => openModal('Kullanım Koşulları', <p className="text-justify leading-relaxed font-sans text-chic-text text-sm">Bu servis eğlence ve içgörü amaçlıdır. Sunulan analizler, profesyonel psikolojik, tıbbi veya hukuki tavsiye niteliği taşımaz. Kullanıcılar, uygulama tarafından üretilen içerikleri kendi sorumluluklarında yorumlamalıdır.</p>)} className="hover:text-chic-primary transition-colors">Koşullar</button>
+          <button onClick={() => openModal('İletişim & Destek', <ContactForm />)} className="hover:text-chic-primary transition-colors">İletişim</button>
         </div>
         <p className="text-[10px] text-gray-300">&copy; {new Date().getFullYear()} Vibrio. All rights reserved.</p>
       </footer>
@@ -76,7 +97,7 @@ const Footer: React.FC = () => {
           <div className="bg-white rounded-2xl w-full max-w-md p-6 relative z-10 shadow-2xl animate-slideUp border border-chic-primary/10" onClick={e=>e.stopPropagation()}>
             <h3 className="text-xl font-serif text-chic-deep mb-4 border-b border-chic-primary/10 pb-2">{modalContent.title}</h3>
             <div className="text-sm text-gray-600">{modalContent.content}</div>
-            <button onClick={() => setModalContent(null)} className="absolute top-4 right-4 text-gray-400 hover:text-red-400 transition-colors w-6 h-6 flex items-center justify-center">×</button>
+            <button onClick={() => setModalContent(null)} className="absolute top-4 right-4 text-gray-400 hover:text-red-400 transition-colors w-6 h-6 flex items-center justify-center text-lg">×</button>
           </div>
         </div>
       )}
