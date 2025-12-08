@@ -21,11 +21,14 @@ const compressImage = async (file: File): Promise<string> => {
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
-        ctx?.drawImage(img, 0, 0, width, height);
-        
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-        const base64Data = dataUrl.split(',')[1];
-        resolve(base64Data);
+        if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            const base64Data = dataUrl.split(',')[1];
+            resolve(base64Data);
+        } else {
+            reject(new Error("Canvas context failed"));
+        }
       };
       img.onerror = (err) => reject(err);
     };
@@ -49,7 +52,7 @@ const responseSchema: Schema = {
       },
       required: ["trust", "passion", "communication", "attachment_style", "conflict_style"],
     },
-    future_visual_description: { type: Type.STRING, description: "Detailed physical visual prompt description of the couple 20 years later for image generation. Include atmosphere, lighting, and physical aging details. If no image provided, describe a metaphorical representation." },
+    future_visual_description: { type: Type.STRING, description: "Detailed physical visual prompt description of the couple 20 years later." },
     premium_report_content: { type: Type.STRING },
   },
   required: ["vibrio_score", "free_comment", "metrics", "premium_report_content", "future_visual_description"],
@@ -63,22 +66,27 @@ export const analyzeRelationship = async (
   imageFile?: File | null
 ): Promise<VibrioResponse> => {
   
+  // 1. API Key Check
+  if (!process.env.API_KEY) {
+    throw new Error("API Anahtarı eksik. Lütfen .env dosyasını kontrol edin.");
+  }
+
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   const systemInstruction = `
     Rol: "Vibrio" İlişki Analisti.
     Görev: Metin/Görsel analizi.
+    Dil: Türkçe.
     
     Kurallar:
     1. DERİNLİK: Jungiyen ve Gottman terimleriyle akademik derinlikte yaz.
-    2. HTML: 'premium_report_content' şık HTML olmalı (<h3 class="text-xl font-serif text-chic-deep mt-4 mb-2"></h3>, <p></p>).
-    3. İÇERİK: Bilinçaltı, Manipülasyon, 20 Yıl Sonraki Gelecek.
-    4. GÖRSEL PROMPT: 'future_visual_description' alanına, çiftin 20 yıl sonraki halini çizecek bir yapay zeka (midjourney/dall-e tarzı) için İngilizce prompt yaz.
-    4. NETLİK: Gereksiz uzatma, yoğun ve çarpıcı ol.
+    2. HTML FORMATI: 'premium_report_content' alanı SADECE HTML string içermelidir. Başlıklar için <h3 class="text-xl font-serif text-chic-deep mt-4 mb-2"></h3>, paragraflar için <p class="mb-2"></p> kullan.
+    3. İÇERİK: Bilinçaltı, Manipülasyon, 20 Yıl Sonraki Gelecek başlıklarını kesinlikle içermeli.
+    4. JSON: Yanıt SADECE geçerli bir JSON objesi olmalıdır. Markdown (json \`\`\`) kullanma.
   `;
 
   const statusContext = relationshipStatus ? `İlişki: ${relationshipStatus}` : "";
-  const promptText = `Ben: ${userZodiac || "?"}, O: ${partnerZodiac || "?"}. ${statusContext}. Not: "${text}"`;
+  const promptText = `Ben: ${userZodiac || "?"}, O: ${partnerZodiac || "?"}. ${statusContext}. Kullanıcı Notu: "${text}"`;
 
   const parts: any[] = [{ text: promptText }];
   
@@ -103,15 +111,37 @@ export const analyzeRelationship = async (
     });
 
     let jsonString = response.text || '{}';
-    jsonString = jsonString.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-
-    return JSON.parse(jsonString);
-  } catch (error: any) {
-    console.error("Gemini Error:", error);
-    let errorMsg = "Analiz hatası.";
-    if (error.message && (error.message.includes("API key") || error.message.includes("403"))) {
-        errorMsg = "API Anahtarı hatası.";
+    
+    // Robust cleanup
+    jsonString = jsonString.replace(/```json/g, '').replace(/```/g, '').trim();
+    
+    // Sometimes models add text before/after the JSON
+    const firstBrace = jsonString.indexOf('{');
+    const lastBrace = jsonString.lastIndexOf('}');
+    
+    if (firstBrace !== -1 && lastBrace !== -1) {
+        jsonString = jsonString.substring(firstBrace, lastBrace + 1);
     }
+
+    try {
+        const parsed = JSON.parse(jsonString);
+        return parsed;
+    } catch (jsonError) {
+        console.error("JSON Parse Error:", jsonError, "Raw String:", jsonString);
+        throw new Error("Veri formatı işlenemedi. Lütfen tekrar deneyin.");
+    }
+
+  } catch (error: any) {
+    console.error("Gemini Critical Error:", error);
+    let errorMsg = "Analiz sırasında bir hata oluştu.";
+    
+    if (error.message) {
+        if (error.message.includes("API key")) errorMsg = "API Anahtarı geçersiz.";
+        else if (error.message.includes("403")) errorMsg = "Erişim izni yok (403). Location ayarlarını kontrol edin.";
+        else if (error.message.includes("503")) errorMsg = "Servis şu an yoğun, lütfen tekrar deneyin.";
+        else errorMsg = `Hata: ${error.message}`;
+    }
+    
     throw new Error(errorMsg);
   }
 };
@@ -120,43 +150,34 @@ export const generateImageProjection = async (
   description: string,
   imageFile?: File | null
 ): Promise<string | null> => {
+  if (!process.env.API_KEY) return null;
+  
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const parts: any[] = [];
 
-  // Gelişmiş prompt mühendisliği
-  const prompt = `Create a photorealistic, cinematic shot of the couple described below, set 20 years in the future.
-  The image should look like a high-end photograph taken with a Leica camera, 85mm lens, f/1.4 aperture.
-  Style: Realistic, slightly nostalgic but sharp 8K details, cinematic lighting.
-  Subject Description: ${description}
-  Mood: Emotional, deep connection, mature love.`;
+  const prompt = `Cinematic portrait, 20 years later envisioning: ${description}. Photorealistic, 8k, highly detailed.`;
 
   if (imageFile) {
     try {
       const base64Data = await compressImage(imageFile);
-      // Image-to-Image: Kaynak resmi kullan
       parts.push({ inlineData: { mimeType: 'image/jpeg', data: base64Data } });
-      // Yüz koruma komutunu güçlendirdik
-      parts.push({ text: prompt + " CRITICAL INSTRUCTION: You MUST use the people in the provided image as the source. Preserve their facial identity, ethnicity, and unique features strictly, but age them naturally by 20 years. Keep the composition similar but update the environment to be more mature." });
+      parts.push({ text: prompt + " Preserve facial identity strictly but age them 20 years." });
     } catch (e) {
       parts.push({ text: prompt });
     }
   } else {
-    // Text-to-Image
     parts.push({ text: prompt });
   }
 
   try {
-    // Görsel üretimi için Gemini 2.5 Flash Image kullanımı
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image',
+      model: 'gemini-2.5-flash-image', // Fallback to flash-image as it is more stable for general users without paid plans setup
       contents: { parts },
       config: {
-        // En-boy oranını UI'daki çerçeveye (4:3) uyacak şekilde ayarlıyoruz.
         imageConfig: { aspectRatio: '4:3' }
       }
     });
 
-    // Yanıtın içinde resim verisi arama
     if (response.candidates?.[0]?.content?.parts) {
       for (const part of response.candidates[0].content.parts) {
         if (part.inlineData) {
@@ -166,7 +187,7 @@ export const generateImageProjection = async (
     }
     return null;
   } catch (error) {
-    console.error("Image Gen Error:", error);
+    console.warn("Image Gen Error (Ignorable):", error);
     return null; 
   }
 };

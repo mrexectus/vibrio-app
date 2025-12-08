@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useLayoutEffect } from 'react';
 import { analyzeRelationship, generateImageProjection } from './services/geminiService';
 import { AnalysisStatus, VibrioResponse } from './types';
 import VibrioGauge from './components/VibrioGauge';
@@ -111,6 +111,11 @@ const App: React.FC = () => {
   const topRef = useRef<HTMLDivElement>(null); 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Force scroll to top on mount
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   useEffect(() => {
     try {
       const url = new URLSearchParams(window.location.search);
@@ -146,6 +151,7 @@ const App: React.FC = () => {
     return () => clearInterval(int);
   }, []);
 
+  // SCROLL LOGIC
   useEffect(() => {
     if(status === AnalysisStatus.ANALYZING) {
       const msgs = ["Bilinçaltı Kodları Taranıyor...", "Emoji ve Beden Dili Çözülüyor...", "Gottman Analizi Yapılıyor...", "Gelecek Simülasyonu Hesaplanıyor...", "Karmik Bağlar Hesaplanıyor..."];
@@ -154,11 +160,13 @@ const App: React.FC = () => {
       return () => clearInterval(t);
     }
     if(status === AnalysisStatus.COMPLETED) {
-        setTimeout(() => {
-            topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 50);
+        // Force scroll to absolute top of window to ensure report is seen
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [status]);
+    if(errorMsg) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [status, errorMsg]);
 
   const astroInsight = useMemo(() => getAstroInsight(userZodiac, partnerZodiac), [userZodiac, partnerZodiac]);
 
@@ -169,15 +177,22 @@ const App: React.FC = () => {
   const handleSubmit = async () => {
     if(!inputText && !imageFile) { setErrorMsg("Lütfen analiz için bir metin yazın veya fotoğraf yükleyin."); return; }
     
-    setErrorMsg(null); setStatus(AnalysisStatus.ANALYZING);
+    setErrorMsg(null); 
+    setResult(null); // Clear previous result
+    setStatus(AnalysisStatus.ANALYZING);
+    
     try {
       const data = await analyzeRelationship(inputText, userZodiac, partnerZodiac, relStatus, imageFile);
+      
+      if (!data) throw new Error("Veri alınamadı.");
+
       setResult(data); 
       setStatus(AnalysisStatus.COMPLETED); 
       localStorage.setItem('vibrio_result', JSON.stringify(data));
 
       if (data.future_visual_description) {
          setIsImageGenerating(true);
+         // Async execution for image, doesn't block UI
          setTimeout(async () => {
             try {
                 const generatedImg = await generateImageProjection(data.future_visual_description!, imageFile);
@@ -191,13 +206,16 @@ const App: React.FC = () => {
             } finally {
                 setIsImageGenerating(false);
             }
-         }, 500);
+         }, 100);
       }
 
-    } catch(e: any) { setErrorMsg(e.message); setStatus(AnalysisStatus.IDLE); }
+    } catch(e: any) { 
+        setErrorMsg(e.message || "Bilinmeyen hata"); 
+        setStatus(AnalysisStatus.IDLE); 
+    }
   };
 
-  const reset = () => { localStorage.removeItem('vibrio_result'); setResult(null); setStatus(AnalysisStatus.IDLE); setInputText(''); setIsUnlocked(false); setImageFile(null); };
+  const reset = () => { localStorage.removeItem('vibrio_result'); setResult(null); setStatus(AnalysisStatus.IDLE); setInputText(''); setIsUnlocked(false); setImageFile(null); window.scrollTo(0,0); };
   const addEmoji = (emoji: string) => { setInputText(prev => prev + emoji); textareaRef.current?.focus(); };
 
   const handleShare = async () => {
@@ -229,6 +247,21 @@ const App: React.FC = () => {
       </nav>
 
       <main className="md:pt-20 w-full max-w-6xl mx-auto md:pb-8">
+        
+        {/* Error Message Display */}
+        {errorMsg && (
+            <div className="max-w-md mx-auto mt-4 px-4 md:px-0 animate-slideUp z-50 relative">
+                <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl shadow-lg flex items-start gap-3">
+                    <span className="text-xl">⚠️</span>
+                    <div>
+                        <h4 className="font-bold text-sm uppercase tracking-wider mb-1">Analiz Başarısız</h4>
+                        <p className="text-xs">{errorMsg}</p>
+                    </div>
+                    <button onClick={() => setErrorMsg(null)} className="ml-auto text-red-400 hover:text-red-700">✕</button>
+                </div>
+            </div>
+        )}
+
         {status === AnalysisStatus.IDLE && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-start animate-fadeIn min-h-[85vh]">
             
@@ -349,7 +382,6 @@ const App: React.FC = () => {
                            <span className="text-sm no-italic font-sans opacity-70 group-hover:translate-x-1 transition-transform">→</span>
                          </button>
                       </div>
-                      {errorMsg && <div className="bg-red-50 p-3 mt-4 rounded-xl border border-red-100 text-center animate-fadeIn"><p className="text-red-500 text-xs font-bold">{errorMsg}</p></div>}
                     </div>
                  </div>
                </div>
