@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 interface RadarChartProps {
@@ -9,13 +10,12 @@ interface RadarChartProps {
 const RadarChart: React.FC<RadarChartProps> = ({ trust, passion, communication }) => {
   const size = 300;
   const center = size / 2;
-  const radius = 100; // Base radius for the grid
+  const radius = 90; // Slightly reduced to fit labels
   
-  // Convert polar to cartesian
+  // Calculate coordinates
   const getCoordinates = (value: number, angleDegrees: number) => {
     const angleRad = (Math.PI / 180) * angleDegrees;
-    // Normalize value (0-100) to radius distance
-    // We add a slight exponential curve so high values look more "impactful"
+    // Organic scaling: values > 50 start pushing out faster
     const dist = (value / 100) * radius; 
     return {
       x: center + dist * Math.cos(angleRad),
@@ -23,114 +23,155 @@ const RadarChart: React.FC<RadarChartProps> = ({ trust, passion, communication }
     };
   };
 
-  // Axis configuration
-  // Trust: Top (-90deg), Passion: Bottom Right (30deg), Communication: Bottom Left (150deg)
   const axes = [
-    { label: "GÜVEN", angle: -90, value: trust, color: "#8A9A5B" }, // Greenish
-    { label: "TUTKU", angle: 30, value: passion, color: "#D4A373" }, // Gold
-    { label: "İLETİŞİM", angle: 150, value: communication, color: "#9D8189" } // Mauve
+    { label: "GÜVEN", angle: -90, value: trust, color: "#8A9A5B" },
+    { label: "TUTKU", angle: 30, value: passion, color: "#D4A373" },
+    { label: "İLETİŞİM", angle: 150, value: communication, color: "#9D8189" }
   ];
 
-  // Calculate polygon points
   const points = axes.map(axis => getCoordinates(axis.value, axis.angle));
-  const pointsString = points.map(p => `${p.x},${p.y}`).join(' ');
 
-  // Calculate grid levels (0%, 50%, 100%)
-  const levels = [0.33, 0.66, 1].map(scale => 
-     axes.map(axis => {
-       const coord = getCoordinates(100 * scale, axis.angle);
-       return `${coord.x},${coord.y}`;
-     }).join(' ')
-  );
+  // Helper to create a curved path (quadratic-like bezier through points)
+  // For a triangle, we can use simple quadratic curves between midpoints, or just curve to points
+  // Simple Catmull-Rom or Quadratic estimation for 3 points:
+  const createCurvedPath = (pts: {x:number, y:number}[]) => {
+     // For a blobby triangle, we curve from p0 -> p1 -> p2 -> p0
+     // We can control the 'roundness' by pulling control points towards the center or perpendicular
+     
+     // Let's use Q (Quadratic Bezier). 
+     // We need to find a control point between p0 and p1 that puffs out if values are high
+     
+     const path = [
+       `M ${pts[0].x} ${pts[0].y}`,
+       `Q ${center} ${center} ${pts[1].x} ${pts[1].y}`, // This pulls inward, making a star shape. We want Blob.
+     ];
+
+     // Better approach for organic blob: 
+     // Use "L" but with rounded corners? No, user wants organic weight.
+     // Let's try Q with control points calculated to be slightly outside the straight line
+     
+     let d = `M ${pts[0].x} ${pts[0].y}`;
+     for (let i = 0; i < pts.length; i++) {
+        const pStart = pts[i];
+        const pEnd = pts[(i + 1) % pts.length];
+        
+        // Midpoint
+        const midX = (pStart.x + pEnd.x) / 2;
+        const midY = (pStart.y + pEnd.y) / 2;
+        
+        // Push midpoint away from center slightly to create curve
+        // The push amount depends on the average value of the two points
+        const valStart = axes[i].value;
+        const valEnd = axes[(i+1)%3].value;
+        const avgVal = (valStart + valEnd) / 2;
+        
+        // Push factor: Higher value = more curve outward
+        const pushFactor = avgVal > 70 ? 1.15 : 1.05; 
+        const cpX = center + (midX - center) * pushFactor;
+        const cpY = center + (midY - center) * pushFactor;
+        
+        d += ` Q ${cpX} ${cpY} ${pEnd.x} ${pEnd.y}`;
+     }
+     
+     return d;
+  };
+
+  const blobPath = createCurvedPath(points);
+
+  // Background Grid Circles
+  const gridLevels = [30, 60, 90]; 
 
   return (
     <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-full select-none overflow-visible">
       <defs>
-        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+        <filter id="blobGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="6" result="coloredBlur" />
           <feMerge>
             <feMergeNode in="coloredBlur" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-        <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#D4A373" stopOpacity="0.8" />
-          <stop offset="100%" stopColor="#9D8189" stopOpacity="0.6" />
+        <linearGradient id="blobGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#D4A373" stopOpacity="0.9" />
+          <stop offset="50%" stopColor="#9D8189" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="#8A9A5B" stopOpacity="0.9" />
         </linearGradient>
       </defs>
 
-      {/* Background Web/Grid */}
-      {levels.map((levelPoints, i) => (
-        <polygon 
-          key={i} 
-          points={levelPoints} 
-          fill={i === 2 ? "#fff" : "none"} 
-          fillOpacity="0.5"
-          stroke="#E6CCB2" 
-          strokeWidth="1" 
-          strokeDasharray="4 4"
-        />
+      {/* Grid Circles */}
+      {gridLevels.map((level, i) => (
+         <circle 
+           key={i} 
+           cx={center} 
+           cy={center} 
+           r={(level/100)*radius} 
+           fill={i===2 ? "#FFF" : "none"} 
+           fillOpacity="0.3"
+           stroke="#E6CCB2" 
+           strokeDasharray="4 4" 
+           strokeWidth="1"
+         />
       ))}
 
       {/* Axis Lines */}
       {axes.map((axis, i) => {
-        const end = getCoordinates(100, axis.angle);
-        return (
-          <line 
-            key={i} 
-            x1={center} 
-            y1={center} 
-            x2={end.x} 
-            y2={end.y} 
-            stroke="#E6CCB2" 
-            strokeWidth="1" 
-            opacity="0.5"
-          />
-        );
+         const end = getCoordinates(100, axis.angle);
+         return (
+           <line 
+             key={i} 
+             x1={center} 
+             y1={center} 
+             x2={end.x} 
+             y2={end.y} 
+             stroke="#E6CCB2" 
+             strokeWidth="1" 
+             opacity="0.5" 
+           />
+         );
       })}
 
-      {/* The Data Shape */}
-      <polygon 
-        points={pointsString} 
-        fill="url(#chartGradient)" 
+      {/* The Organic Blob */}
+      <path 
+        d={blobPath} 
+        fill="url(#blobGradient)" 
         stroke="#463F3A" 
-        strokeWidth="2" 
-        className="drop-shadow-xl transition-all duration-1000 ease-out"
-        filter="url(#glow)"
+        strokeWidth="0" // No border for softer look, or thin one
+        filter="url(#blobGlow)"
+        className="transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
       />
 
-      {/* Data Points (Vertices) */}
+      {/* Data Points */}
       {points.map((p, i) => (
         <g key={i} className="group">
-           {/* Pulsing effect for high values */}
+           {/* Ripple for high values */}
            {axes[i].value > 80 && (
-             <circle cx={p.x} cy={p.y} r="8" fill={axes[i].color} opacity="0.3" className="animate-ping" />
+              <circle cx={p.x} cy={p.y} r="12" fill={axes[i].color} opacity="0.2" className="animate-ping" />
            )}
            <circle 
              cx={p.x} 
              cy={p.y} 
-             r={axes[i].value > 80 ? 5 : 3} 
+             r={axes[i].value > 80 ? 6 : 4} 
              fill="#FFF" 
              stroke={axes[i].color} 
              strokeWidth="2" 
              className="transition-all duration-500"
            />
-           {/* Value Tooltip Label near point */}
+           {/* Value */}
            <text 
              x={p.x} 
-             y={p.y + (axes[i].angle === -90 ? -10 : 20)} 
+             y={p.y + (axes[i].angle === -90 ? -15 : 25)} 
              textAnchor="middle" 
              fill={axes[i].color}
-             className="text-[10px] font-bold"
+             className="text-[11px] font-bold"
            >
              {axes[i].value}
            </text>
         </g>
       ))}
 
-      {/* Axis Labels (Fixed positions outside) */}
+      {/* Labels */}
       {axes.map((axis, i) => {
-        const labelPos = getCoordinates(118, axis.angle); // Push text further out
+        const labelPos = getCoordinates(125, axis.angle); 
         return (
           <text 
             key={i} 
@@ -138,7 +179,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ trust, passion, communication }
             y={labelPos.y} 
             textAnchor="middle" 
             dominantBaseline="middle"
-            className="font-serif text-[10px] fill-chic-deep font-bold tracking-widest uppercase"
+            className="font-serif text-[10px] fill-chic-deep font-bold tracking-[0.2em] uppercase"
           >
             {axis.label}
           </text>

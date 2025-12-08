@@ -20,8 +20,8 @@ const VisualProjection: React.FC<VisualProjectionProps> = ({
     isGenerating = false
 }) => {
   
-  // Update: Using the "Old Couple Walking Away" image to match the sample report consistency
-  const displayImage = generatedImage || 'https://images.unsplash.com/photo-1474176857210-7287d38d27c6?q=80&w=2000&auto=format&fit=crop';
+  // Update: Using the "Happy Old Couple" image from sample data as default fallback
+  const displayImage = generatedImage || 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=2000&auto=format&fit=crop';
   
   return (
     <div className="w-full bg-white rounded-3xl p-1 shadow-sm border border-chic-primary/10 mt-6 relative overflow-hidden group">
