@@ -20,8 +20,8 @@ const VisualProjection: React.FC<VisualProjectionProps> = ({
     isGenerating = false
 }) => {
   
-  // Update: Using the guaranteed "Happy Senior Couple" vertical portrait image from Unsplash
-  const displayImage = generatedImage || 'https://plus.unsplash.com/premium_photo-1661281397737-9b5d75b52beb?q=80&w=600&auto=format&fit=crop';
+  // Update: Using the guaranteed "Happy Senior Couple" vertical portrait image (Faces visible, same as sample data)
+  const displayImage = generatedImage || 'https://images.unsplash.com/photo-1526662097318-6c0b39f4007f?q=80&w=600&auto=format&fit=crop';
   
   return (
     <div className="w-full bg-white rounded-3xl p-1 shadow-sm border border-chic-primary/10 mt-6 relative overflow-hidden group">
@@ -37,9 +37,9 @@ const VisualProjection: React.FC<VisualProjectionProps> = ({
       {/* Image Container - Aspect 4:3 matches the generation config */}
       <div className="relative w-full aspect-[4/3] bg-chic-secondary/10 rounded-2xl overflow-hidden mt-2">
         
-        {/* Background Image */}
+        {/* Background Image - Added object-top to ensure faces are visible if cropped */}
         <div 
-            className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 transform 
+            className={`absolute inset-0 bg-cover bg-top transition-all duration-1000 transform 
                 ${isGenerating ? 'blur-md scale-105 opacity-60' : ''}
                 ${isUnlocked ? 'blur-none scale-100' : 'blur-xl scale-110 grayscale-[0.2]'}
             `} 
