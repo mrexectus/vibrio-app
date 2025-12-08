@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { analyzeRelationship } from './services/geminiService';
+import { analyzeRelationship, generateImageProjection } from './services/geminiService';
 import { AnalysisStatus, VibrioResponse } from './types';
 import VibrioGauge from './components/VibrioGauge';
 import PremiumReport from './components/PremiumReport';
@@ -78,8 +78,8 @@ const App: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [socialProof, setSocialProof] = useState<{name: string, location: string} | null>(null);
   const [showSample, setShowSample] = useState(false);
+  const [isImageGenerating, setIsImageGenerating] = useState(false);
   
-  // New state for handling tooltip visibility
   const [showAstroTooltip, setShowAstroTooltip] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -123,7 +123,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if(status === AnalysisStatus.ANALYZING) {
-      const msgs = ["Bilinçaltı Kodları Taranıyor...", "Emoji ve Beden Dili Çözülüyor...", "Gottman Analizi Yapılıyor...", "Gelecek Simülasyonu Oluşturuluyor...", "Karmik Bağlar Hesaplanıyor..."];
+      const msgs = ["Bilinçaltı Kodları Taranıyor...", "Emoji ve Beden Dili Çözülüyor...", "Gottman Analizi Yapılıyor...", "Gelecek Simülasyonu Hesaplanıyor...", "Karmik Bağlar Hesaplanıyor..."];
       let i=0; setLoadingMsg(msgs[0]);
       const t = setInterval(() => { i=(i+1)%msgs.length; setLoadingMsg(msgs[i]); }, 2500);
       return () => clearInterval(t);
@@ -137,11 +137,9 @@ const App: React.FC = () => {
 
   const astroInsight = useMemo(() => getAstroInsight(userZodiac, partnerZodiac), [userZodiac, partnerZodiac]);
 
-  // Handle Tooltip Logic
   useEffect(() => {
     if (astroInsight) {
         setShowAstroTooltip(true);
-        // Auto-dismiss after 8 seconds
         const timer = setTimeout(() => setShowAstroTooltip(false), 8000);
         return () => clearTimeout(timer);
     }
@@ -156,8 +154,33 @@ const App: React.FC = () => {
     
     setErrorMsg(null); setStatus(AnalysisStatus.ANALYZING);
     try {
+      // 1. Metin Analizi Başlat
       const data = await analyzeRelationship(inputText, userZodiac, partnerZodiac, relStatus, imageFile);
-      setResult(data); setStatus(AnalysisStatus.COMPLETED); localStorage.setItem('vibrio_result', JSON.stringify(data));
+      setResult(data); 
+      setStatus(AnalysisStatus.COMPLETED); 
+      localStorage.setItem('vibrio_result', JSON.stringify(data));
+
+      // 2. Arka Planda Görsel Üretimi (Eğer betimleme varsa)
+      if (data.future_visual_description) {
+         setIsImageGenerating(true);
+         // UI'ın metni render etmesi için kısa bir gecikme
+         setTimeout(async () => {
+            try {
+                // Burada Image Gen çağrısı yapıyoruz
+                const generatedImg = await generateImageProjection(data.future_visual_description!, imageFile);
+                if (generatedImg) {
+                    const updatedData = { ...data, generated_image_base64: generatedImg };
+                    setResult(updatedData);
+                    localStorage.setItem('vibrio_result', JSON.stringify(updatedData));
+                }
+            } catch (err) {
+                console.error("BG Image gen error", err);
+            } finally {
+                setIsImageGenerating(false);
+            }
+         }, 500);
+      }
+
     } catch(e: any) { setErrorMsg(e.message); setStatus(AnalysisStatus.IDLE); }
   };
 
@@ -175,11 +198,6 @@ const App: React.FC = () => {
   const handleShowSample = async () => {
     if (!showSample) setShowSample(true);
   };
-
-  const sampleContent = import('./services/sampleData').then(m => m.sampleReportContent);
-  const [loadedSample, setLoadedSample] = useState<string>("");
-  useEffect(() => { if(showSample) sampleContent.then(setLoadedSample); }, [showSample]);
-
 
   return (
     <div className="min-h-dvh font-sans text-chic-text selection:bg-chic-primary selection:text-white pb-safe relative overflow-x-hidden">
@@ -211,7 +229,7 @@ const App: React.FC = () => {
                <div className="grid grid-cols-1 gap-2 mt-4">
                   <div className="flex items-center gap-3 opacity-80"><span className="text-lg">🧠</span><span className="text-xs text-chic-deep">Bilinçaltı Okuma</span></div>
                   <div className="flex items-center gap-3 opacity-80"><span className="text-lg">🚩</span><span className="text-xs text-chic-deep">Manipülasyon Taraması</span></div>
-                  <div className="flex items-center gap-3 opacity-80"><span className="text-lg">👶</span><span className="text-xs text-chic-deep">Gelecek Simülasyonu</span></div>
+                  <div className="flex items-center gap-3 opacity-80"><span className="text-lg">🎨</span><span className="text-xs text-chic-deep">Gerçek AI Görsel Üretimi (2045)</span></div>
                </div>
             </div>
 
@@ -261,7 +279,6 @@ const App: React.FC = () => {
                       )}
                     </div>
 
-                    {/* Fixed Height Layout Container to prevent shifts */}
                     <div className="relative">
                         <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1">
@@ -280,7 +297,6 @@ const App: React.FC = () => {
                         </div>
                         </div>
 
-                        {/* Astro Insight Overlay - Dismissible */}
                         {showAstroTooltip && astroInsight && (
                             <div className="absolute left-0 right-0 top-full mt-2 bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-2xl border border-chic-primary/20 z-50 animate-slideUp">
                                 <button onClick={() => setShowAstroTooltip(false)} className="absolute top-1 right-2 text-chic-deep/50 hover:text-chic-deep text-lg font-bold">&times;</button>
@@ -360,12 +376,10 @@ const App: React.FC = () => {
           <div className="animate-slideUp pt-2 px-4 md:px-0">
              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
                 
-                {/* Sol Panel: Metrikler (COMPACT) */}
                 <div className="md:col-span-4 space-y-4">
                    <div className="bg-white p-5 rounded-3xl shadow-sm border border-chic-primary/10 relative overflow-hidden">
                       <div className="absolute inset-0 bg-floral-pattern opacity-[0.03]"></div>
                       
-                      {/* Compact Header: Quote + Gauge Side by Side or stacked tightly */}
                       <div className="relative z-10 flex flex-col items-center">
                          <div className="text-center mb-4 px-2">
                              <p className="text-xl md:text-2xl font-hand text-chic-deep leading-snug">
@@ -374,7 +388,6 @@ const App: React.FC = () => {
                          </div>
                          <div className="w-full h-[1px] bg-chic-primary/10 mb-4"></div>
                          
-                         {/* Metrics Row */}
                          <div className="flex justify-around w-full items-center">
                             <div className="flex flex-col items-center">
                                 <span className="text-[9px] uppercase tracking-widest text-chic-accent mb-1">Skor</span>
@@ -395,15 +408,19 @@ const App: React.FC = () => {
                       </div>
                    </div>
 
-                   {/* Radar Chart Small */}
                    <div className="bg-white p-4 rounded-3xl shadow-sm border border-chic-primary/10">
                       <div className="h-32 w-full">
                          <RadarChart trust={result.metrics.trust} passion={result.metrics.passion} communication={result.metrics.communication} />
                       </div>
                    </div>
 
-                   {/* Görsel Projeksiyon (Sneak Peek) */}
-                   <VisualProjection description={result.future_visual_description} isUnlocked={isUnlocked} userImage={imagePreviewUrl} />
+                   <VisualProjection 
+                      description={result.future_visual_description} 
+                      isUnlocked={isUnlocked} 
+                      userImage={imagePreviewUrl} 
+                      generatedImage={result.generated_image_base64}
+                      isGenerating={isImageGenerating}
+                   />
 
                    {isUnlocked && (
                      <button onClick={handleShare} className="w-full py-3 border border-chic-primary/30 rounded-xl text-chic-deep uppercase text-[10px] tracking-[0.2em] hover:bg-chic-primary hover:text-white transition-all">
@@ -419,10 +436,8 @@ const App: React.FC = () => {
                     </button>
                 </div>
 
-                {/* Sağ Panel: Premium Rapor & Paywall */}
                 <div className="md:col-span-8 relative flex flex-col">
                    
-                   {/* PAYWALL */}
                    {!isUnlocked && (
                      <div className="z-30 w-full mb-4">
                        <Paywall onUnlock={() => setIsUnlocked(true)} />
@@ -438,7 +453,6 @@ const App: React.FC = () => {
                      </div>
                    )}
                    
-                   {/* Rapor İçeriği */}
                    <div className={`relative transition-all duration-700 bg-white p-6 md:p-8 rounded-3xl border border-chic-primary/10 ${!isUnlocked ? 'h-[250px] overflow-hidden blur-sm opacity-60 select-none pointer-events-none' : 'opacity-100 min-h-[500px]'}`}>
                       <PremiumReport content={result.premium_report_content} />
                    </div>
@@ -458,13 +472,78 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* Demo Modal */}
-      {showSample && loadedSample && (
+      {showSample && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 md:p-4 bg-chic-deep/30 backdrop-blur-sm" onClick={() => setShowSample(false)}>
            <div className="bg-white w-full max-w-4xl h-[90vh] overflow-y-auto rounded-3xl relative shadow-2xl" onClick={e => e.stopPropagation()}>
                <button onClick={() => setShowSample(false)} className="absolute top-4 right-4 z-50 w-8 h-8 bg-chic-bg rounded-full flex items-center justify-center text-chic-deep font-bold hover:bg-chic-primary hover:text-white transition-colors">×</button>
-               <div className="p-2">
-                 <PremiumReport content={loadedSample} />
+               <div className="p-4 md:p-8">
+                 {/* HARDCODED SAMPLE CONTENT INLINE - V9.0 MANUAL */}
+                 <div className="space-y-8 font-sans text-chic-deep">
+                    
+                    <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-chic-primary/20 pb-6">
+                        <div className="flex-1">
+                            <div className="text-[10px] uppercase tracking-[0.2em] text-chic-accent font-bold mb-1">Analiz Dosyası</div>
+                            <div className="text-2xl font-serif text-chic-deep">#VIB-2025-X92 <span className="text-xs opacity-50 text-red-500 font-bold">(v9.0 MANUAL)</span></div>
+                            <div className="text-xs text-chic-text mt-1 font-medium">Selin (Yengeç) & Mert (Oğlak)</div>
+                        </div>
+                        <div className="flex-1 flex flex-col items-end justify-center">
+                            <div className="bg-chic-deep text-white px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-1 shadow-md">
+                              Ruh Eşi Uyumu (%98)
+                            </div>
+                            <div className="text-[9px] text-gray-400">Rapor Tarihi: 08.12.2025</div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-2xl border border-chic-primary/20 shadow-sm relative overflow-hidden">
+                       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gray-200 via-gray-400 to-gray-200"></div>
+                       
+                       <h3 className="font-serif text-xl text-chic-deep mb-6 flex items-center gap-2">
+                          <span className="text-2xl">⏳</span> 
+                          <span className="italic">Vibrio Vision: Bağlılık Testi</span>
+                       </h3>
+                       
+                       <div className="grid grid-cols-2 gap-6">
+                          
+                          {/* 1. GÜNCEL HAL (Young Hands BW) */}
+                          <div className="space-y-3">
+                              <div className="aspect-square rounded-full overflow-hidden relative shadow-xl border-4 border-white ring-1 ring-gray-100 group mx-auto w-3/4">
+                                  <img src="https://images.unsplash.com/photo-1621789098261-232619c72747?q=80&w=600&auto=format&fit=crop&sat=-100" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Genç Eller" />
+                              </div>
+                              <div className="text-center">
+                                  <div className="text-xs font-serif font-bold text-chic-deep">2025 (Bugün)</div>
+                                  <div className="text-[9px] text-gray-400 uppercase tracking-widest">Gençlik Enerjisi</div>
+                              </div>
+                          </div>
+
+                          {/* 2. YAŞLANDIRILMIŞ HAL (Old Hands BW) */}
+                          <div className="space-y-3">
+                              <div className="aspect-square rounded-full overflow-hidden relative shadow-xl border-4 border-chic-primary/30 ring-1 ring-chic-primary/20 group mx-auto w-3/4 grayscale">
+                                  <div className="absolute top-0 right-0 bg-chic-deep text-white text-[8px] px-2 py-1 rounded-bl-xl z-10 font-bold tracking-widest">SİMÜLASYON</div>
+                                  <img src="https://images.unsplash.com/photo-1529123202150-13f5b5c907d8?q=80&w=600&auto=format&fit=crop&sat=-100" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Yaşlı Eller" />
+                              </div>
+                               <div className="text-center">
+                                  <div className="text-xs font-serif font-bold text-chic-deep">2065 (Gelecek)</div>
+                                  <div className="text-[9px] text-gray-400 uppercase tracking-widest">Sarsılmaz Bağ</div>
+                              </div>
+                          </div>
+
+                       </div>
+                       
+                       <div className="mt-6 bg-gray-50 p-4 rounded-xl text-center border border-gray-100">
+                          <p className="font-serif italic text-sm text-gray-600">"Tenler değişir, yüzler yaşlanır ama ellerin birbirini tutuş biçimi asla yalan söylemez. Vibrio, bu çiftin yaşlılıkta bile ellerini bırakmayacağını öngörüyor."</p>
+                       </div>
+                    </div>
+
+                    <div className="prose prose-sm max-w-none text-chic-text text-justify leading-relaxed mt-8">
+                       <h4 className="font-serif text-lg text-chic-deep italic border-b border-chic-primary/20 pb-2 mb-3">Gelecek Projeksiyonu</h4>
+                       <p>
+                         Vibrio algoritmaları, 20 yıl sonrasında sizi sessizce anlaşan, birbirinin cümlelerini tamamlayan ve kalabalık ortamlarda bile sadece göz temasıyla iletişim kurabilen bir çift olarak modelliyor. 
+                       </p>
+                       <p>
+                         <strong>Kritik Uyarı:</strong> Mert'in (Oğlak) işkolik yapısı, 40'lı yaşlarda bir krize yol açabilir. Ancak Selin'in (Yengeç) kapsayıcı şefkati bu fırtınayı dindirecek tek liman olacak.
+                       </p>
+                    </div>
+                 </div>
                </div>
            </div>
         </div>
