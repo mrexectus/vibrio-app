@@ -1,4 +1,5 @@
 
+
 export const sampleReportContent = `
 <div class="space-y-8 font-sans text-chic-deep">
   
@@ -31,7 +32,7 @@ export const sampleReportContent = `
         <!-- 1. GÜNCEL HAL (Young Hands BW) -->
         <div class="space-y-3">
             <div class="aspect-square rounded-full overflow-hidden relative shadow-xl border-4 border-white ring-1 ring-gray-100 group mx-auto w-3/4">
-                <img src="https://images.unsplash.com/photo-1621789098261-232619c72747?q=80&w=600&auto=format&fit=crop&sat=-100" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Genç Eller">
+                <img src="https://images.unsplash.com/photo-1494774157365-9e04c6720e47?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Genç Eller">
             </div>
             <div class="text-center">
                 <div class="text-xs font-serif font-bold text-chic-deep">2025 (Bugün)</div>
@@ -43,7 +44,7 @@ export const sampleReportContent = `
         <div class="space-y-3">
             <div class="aspect-square rounded-full overflow-hidden relative shadow-xl border-4 border-chic-primary/30 ring-1 ring-chic-primary/20 group mx-auto w-3/4 grayscale">
                 <div class="absolute top-0 right-0 bg-chic-deep text-white text-[8px] px-2 py-1 rounded-bl-xl z-10 font-bold tracking-widest">SİMÜLASYON</div>
-                <img src="https://images.unsplash.com/photo-1474552226712-ac0f0961a954?q=80&w=600&auto=format&fit=crop&sat=-100" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Yaşlı Eller">
+                <img src="https://images.unsplash.com/photo-1526496690184-c5a894564c48?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Yaşlı Eller">
             </div>
              <div class="text-center">
                 <div class="text-xs font-serif font-bold text-chic-deep">2065 (Gelecek)</div>

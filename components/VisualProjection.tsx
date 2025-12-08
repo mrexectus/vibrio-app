@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 
 // HARDCODED SHOPIER LINK AS REQUESTED BY USER
@@ -25,7 +26,7 @@ const VisualProjection: React.FC<VisualProjectionProps> = ({
   // 2. If generating, use placeholder/userImage with loader
   // 3. Fallback to userImage or generic placeholder
   
-  const displayImage = generatedImage || userImage || 'https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=2670&auto=format&fit=crop';
+  const displayImage = generatedImage || userImage || 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=2670&auto=format&fit=crop';
   
   return (
     <div className="w-full bg-white rounded-3xl p-1 shadow-sm border border-chic-primary/10 mt-6 relative overflow-hidden group">

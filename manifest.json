@@ -1,3 +1,4 @@
+
 {
   "name": "Vibrio | Soul Analytics",
   "short_name": "Vibrio",
@@ -8,12 +9,12 @@
   "theme_color": "#FDFBF7",
   "icons": [
     {
-      "src": "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=192&auto=format&fit=crop",
+      "src": "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=192&auto=format&fit=crop",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=512&auto=format&fit=crop",
+      "src": "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=512&auto=format&fit=crop",
       "sizes": "512x512",
       "type": "image/png"
     }
