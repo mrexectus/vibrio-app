@@ -10,23 +10,27 @@ const PremiumReport: React.FC<PremiumReportProps> = ({ content }) => {
          @media print {
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .no-print { display: none !important; }
-            body { background: white; }
+            body { background: white !important; }
+            #printable-report { box-shadow: none !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }
          }
+         /* Smooth typography for reading */
+         .prose p { margin-bottom: 1.5em; }
+         .prose strong { color: #463F3A; font-weight: 700; }
        `}</style>
        <div id="printable-report"
-         className="w-full bg-[#FCFBF9] text-chic-deep p-6 md:p-12 lg:p-16 relative shadow-2xl rounded-sm font-sans text-sm leading-relaxed overflow-hidden print:shadow-none print:p-0"
+         className="w-full bg-[#FCFBF9] text-chic-deep p-6 md:p-12 lg:p-16 relative shadow-2xl rounded-sm font-sans text-sm leading-relaxed overflow-visible print:shadow-none print:p-0 transition-all duration-500"
        >
          {/* Paper Texture & Noise */}
-         <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
+         <div className="absolute inset-0 pointer-events-none opacity-[0.04] z-0" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
          
          {/* Watermark */}
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] h-[70%] border-[20px] border-chic-deep/5 rounded-full pointer-events-none z-0"></div>
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[12vw] font-serif font-bold text-chic-deep/5 -rotate-12 pointer-events-none select-none z-0 whitespace-nowrap">
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] border-[20px] border-chic-deep/5 rounded-full pointer-events-none z-0"></div>
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10vw] font-serif font-bold text-chic-deep/5 -rotate-12 pointer-events-none select-none z-0 whitespace-nowrap">
             CONFIDENTIAL
          </div>
 
-         {/* Header Branding */}
-         <div className="relative z-10 flex justify-between items-start border-b-2 border-chic-deep/80 pb-6 mb-10">
+         {/* Header Branding (Visible on Print) */}
+         <div className="relative z-10 flex justify-between items-start border-b-2 border-chic-deep/80 pb-6 mb-10 print:flex">
             <div>
                 <h1 className="text-3xl md:text-4xl font-serif font-bold tracking-tight text-chic-deep">VIBRIO</h1>
                 <p className="text-[10px] uppercase tracking-[0.4em] text-chic-deep/60 mt-1 font-medium">Soul Analytics Division</p>
@@ -38,13 +42,13 @@ const PremiumReport: React.FC<PremiumReportProps> = ({ content }) => {
             </div>
          </div>
 
-         {/* Content */}
+         {/* Content Injection */}
          <div className="relative z-10"
            dangerouslySetInnerHTML={{ __html: content }} 
          />
          
          {/* Footer / Signature */}
-         <div className="relative z-10 mt-16 pt-10 border-t border-chic-deep/10 flex flex-col md:flex-row justify-between items-center gap-6">
+         <div className="relative z-10 mt-16 pt-10 border-t border-chic-deep/10 flex flex-col md:flex-row justify-between items-center gap-6 print:flex">
              <div className="text-center md:text-left">
                  <p className="font-serif italic text-chic-deep/60 text-lg">"Yıldızlar yolu gösterir, yürümek sana kalmıştır."</p>
                  <p className="text-[9px] uppercase tracking-widest text-chic-deep/30 mt-2">Vibrio Intelligence System v2.5 • Verified Analysis</p>
@@ -61,8 +65,8 @@ const PremiumReport: React.FC<PremiumReportProps> = ({ content }) => {
          </div>
        </div>
 
-       <button onClick={() => window.print()} className="mt-8 mx-auto flex items-center gap-3 px-8 py-4 bg-chic-deep text-white hover:bg-chic-deep/90 rounded-xl text-xs uppercase tracking-[0.2em] font-bold transition-all no-print shadow-xl hover:translate-y-[-2px]">
-          <span>📥</span> Dosyayı PDF Olarak İndir
+       <button onClick={() => window.print()} className="mt-8 mx-auto flex items-center gap-3 px-8 py-4 bg-chic-deep text-white hover:bg-chic-deep/90 rounded-xl text-xs uppercase tracking-[0.2em] font-bold transition-all no-print shadow-xl hover:translate-y-[-2px] group">
+          <span className="group-hover:animate-bounce">📥</span> Dosyayı PDF Olarak İndir
        </button>
     </div>
   );

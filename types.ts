@@ -16,6 +16,15 @@ export interface VibrioResponse {
   };
 }
 
+export interface HistoryItem {
+  id: string;
+  timestamp: number;
+  userZodiac: string;
+  partnerZodiac: string;
+  relStatus: string;
+  result: VibrioResponse & { futureImageUrl?: string };
+}
+
 export interface AnalysisRequest {
   text: string;
   userZodiac?: string;

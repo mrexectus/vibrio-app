@@ -2,13 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --chic-bg: #FDFBF7;
+  --chic-primary: #D4A373;
+  --chic-accent: #9D8189;
+  --chic-deep: #463F3A;
+  --chic-text: #5E503F;
+  --chic-success: #8A9A5B;
+}
+
+/* Midnight Theme */
+[data-theme='midnight'] {
+  --chic-bg: #0F172A;
+  --chic-primary: #94A3B8;
+  --chic-accent: #64748B;
+  --chic-deep: #F1F5F9;
+  --chic-text: #CBD5E1;
+  --chic-success: #2DD4BF;
+}
+
+/* Rose Theme */
+[data-theme='rose'] {
+  --chic-bg: #FFF5F5;
+  --chic-primary: #E5989B;
+  --chic-accent: #B5838D;
+  --chic-deep: #6D597A;
+  --chic-text: #4A3E50;
+  --chic-success: #E5989B;
+}
+
+/* Forest Theme */
+[data-theme='forest'] {
+  --chic-bg: #F0F4F1;
+  --chic-primary: #588157;
+  --chic-accent: #A3B18A;
+  --chic-deep: #344E41;
+  --chic-text: #3A5A40;
+  --chic-success: #588157;
+}
+
 body {
-  background-color: #FDFBF7;
-  color: #5E503F;
+  background-color: var(--chic-bg);
+  color: var(--chic-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior-y: none;
   min-height: 100dvh;
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 .texture-noise {
@@ -35,6 +75,148 @@ body {
 @keyframes rotate {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* Refined Placeholder Breathing Effect */
+@keyframes placeholderFade {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+
+/* Idle Pulsing Animation */
+@keyframes neonPulse {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(212, 163, 115, 0.1);
+    opacity: 0.9;
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(212, 163, 115, 0.2);
+    opacity: 1;
+  }
+}
+
+/* Enhanced Focus Neon Pulse - Theme Aware */
+@keyframes neonFocusPulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 15px var(--chic-primary), 
+      0 0 30px rgba(212, 163, 115, 0.1), 
+      inset 0 0 8px var(--chic-primary);
+    outline-color: rgba(212, 163, 115, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 0 25px var(--chic-primary), 
+      0 0 50px rgba(212, 163, 115, 0.3), 
+      inset 0 0 15px var(--chic-primary);
+    outline-color: rgba(212, 163, 115, 0.4);
+  }
+}
+
+/* Enhanced Subtle Animation for Reset Button */
+@keyframes reset-gentle-pulse {
+  0%, 100% { 
+    transform: translateY(0) scale(1) rotate(0deg);
+    box-shadow: 0 0 0 rgba(157, 129, 137, 0);
+  }
+  25% {
+    transform: translateY(-2px) scale(1.03) rotate(0.5deg);
+  }
+  50% { 
+    transform: translateY(-3px) scale(1.05) rotate(0deg);
+    box-shadow: 0 8px 15px rgba(157, 129, 137, 0.2);
+  }
+  75% {
+    transform: translateY(-2px) scale(1.03) rotate(-0.5deg);
+  }
+}
+
+/* Custom Input Container with Gradient Border */
+.custom-input-container {
+  /* Gradient Border Setup */
+  border: 2px solid transparent !important;
+  border-radius: 12px !important;
+  background-image: linear-gradient(var(--chic-bg), var(--chic-bg)), 
+                    linear-gradient(to right, var(--chic-primary), var(--chic-accent));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  
+  outline: 1px solid transparent;
+  outline-offset: 8px;
+  animation: neonPulse 4s ease-in-out infinite;
+  transition: 
+    outline-offset 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+    outline-color 0.4s ease, 
+    box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    background-image 0.5s ease;
+}
+
+/* Focused State with Soft Glowing Outline */
+.custom-input-container:focus-within {
+  outline: 3px solid var(--chic-primary);
+  outline-offset: 12px;
+  animation: neonFocusPulse 3s ease-in-out infinite; 
+  background-image: linear-gradient(var(--chic-bg), var(--chic-bg)), 
+                    linear-gradient(to right, var(--chic-primary), var(--chic-primary)); /* Solidify gradient on focus for intensity */
+}
+
+/* Applying the breathing effect to the placeholder */
+.custom-input-container textarea::placeholder {
+  animation: placeholderFade 6s ease-in-out infinite;
+  transition: opacity 0.3s ease;
+}
+
+/* Reset button hover animation */
+.custom-input-container .reset-btn {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-input-container .reset-btn:hover {
+  animation: reset-gentle-pulse 2s ease-in-out infinite;
+  border-color: var(--chic-accent) !important;
+  color: var(--chic-accent) !important;
+  background-color: rgba(157, 129, 137, 0.03);
+}
+
+/* Input stylized corners */
+.input-stylized-frame {
+  position: relative;
+}
+
+.input-stylized-frame::before,
+.input-stylized-frame::after {
+  content: '';
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-color: var(--chic-primary);
+  opacity: 0.25;
+  pointer-events: none;
+  transition: opacity 0.3s ease, border-color 0.3s ease;
+  z-index: 10;
+}
+
+.input-stylized-frame::before {
+  top: 15px;
+  left: 15px;
+  border-top-width: 1px;
+  border-left-width: 1px;
+  border-radius: 4px 0 0 0;
+}
+
+.input-stylized-frame::after {
+  bottom: 15px;
+  right: 15px;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+  border-radius: 0 0 4px 0;
+}
+
+.input-stylized-frame:focus-within::before,
+.input-stylized-frame:focus-within::after {
+  opacity: 0.7;
+  border-color: var(--chic-primary);
+  filter: drop-shadow(0 0 5px var(--chic-primary));
 }
 
 /* Scrollbar Hide */

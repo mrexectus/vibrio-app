@@ -8,25 +8,28 @@ const ContactForm: React.FC = () => {
     e.preventDefault();
     
     // Professional Ticket Format
-    const ticketId = Math.floor(1000 + Math.random() * 9000);
-    const subject = `[Ticket #${ticketId}] Vibrio Destek Talebi: ${formData.name}`;
+    const ticketId = Math.floor(100000 + Math.random() * 900000); // 6 digit ID
+    const subject = `[TICKET #${ticketId}] Vibrio Destek Talebi: ${formData.name}`;
     
     const body = `
-Sayın Vibrio Destek Ekibi,
+Sayın Vibrio Müşteri İlişkileri,
 
-Aşağıdaki konuda desteğinizi rica ederim.
+Aşağıdaki konuda destek veya bilgi talep etmekteyim.
 
-Gönderen Bilgileri:
+------------------------------------------------
+MÜŞTERİ BİLGİLERİ
 ------------------------------------------------
 Ad Soyad: ${formData.name}
-E-posta: ${formData.email}
+İletişim E-posta: ${formData.email}
+Ticket ID: #${ticketId}
+Tarih: ${new Date().toLocaleDateString('tr-TR')}
 ------------------------------------------------
 
-Mesaj:
+MESAJ İÇERİĞİ:
 ${formData.message}
 
-Saygılarımla,
-${formData.name}
+------------------------------------------------
+Not: Bu e-posta, Vibrio web uygulaması üzerinden otomatik oluşturulmuştur.
     `.trim();
 
     window.location.href = `mailto:support@vibrio.info?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
@@ -35,7 +38,7 @@ ${formData.name}
   return (
     <form onSubmit={handleSubmit} className="space-y-4 pt-2">
       <div>
-        <label className="block text-[10px] font-bold text-chic-deep uppercase tracking-widest mb-1">İsim</label>
+        <label className="block text-[10px] font-bold text-chic-deep uppercase tracking-widest mb-1">İsim Soyisim</label>
         <input 
           type="text" 
           required
@@ -46,7 +49,7 @@ ${formData.name}
         />
       </div>
       <div>
-        <label className="block text-[10px] font-bold text-chic-deep uppercase tracking-widest mb-1">E-posta</label>
+        <label className="block text-[10px] font-bold text-chic-deep uppercase tracking-widest mb-1">E-posta Adresi</label>
         <input 
           type="email" 
           required
@@ -57,22 +60,25 @@ ${formData.name}
         />
       </div>
       <div>
-        <label className="block text-[10px] font-bold text-chic-deep uppercase tracking-widest mb-1">Mesaj</label>
+        <label className="block text-[10px] font-bold text-chic-deep uppercase tracking-widest mb-1">Destek Konusu</label>
         <textarea 
           required
           rows={4}
           value={formData.message}
           onChange={e => setFormData({...formData, message: e.target.value})}
           className="w-full bg-chic-bg p-3 rounded-xl border border-chic-primary/20 focus:border-chic-primary outline-none text-sm text-chic-deep placeholder:text-chic-deep/30 resize-none transition-colors"
-          placeholder="Sorunuzu detaylı bir şekilde yazınız..."
+          placeholder="Lütfen sorununuzu veya talebinizi detaylı bir şekilde açıklayınız..."
         />
       </div>
       <button type="submit" className="w-full py-3 bg-chic-deep text-white font-bold rounded-xl uppercase text-[10px] tracking-[0.2em] hover:bg-chic-deep/90 transition-colors shadow-md active:scale-[0.98]">
-        Talebi Gönder ✉️
+        Talebi Oluştur & Gönder
       </button>
-      <p className="text-[9px] text-center text-gray-400 mt-2">
-        Cihazınızdaki varsayılan e-posta uygulaması açılacaktır.
-      </p>
+      <div className="flex items-center gap-2 justify-center mt-3 opacity-50">
+          <span className="w-2 h-2 rounded-full bg-green-500"></span>
+          <p className="text-[9px] text-gray-400">
+            Destek Ekibi Çevrimiçi (Ort. Yanıt: 2 Saat)
+          </p>
+      </div>
     </form>
   );
 };
@@ -90,7 +96,7 @@ const Footer: React.FC = () => {
           <button onClick={() => openModal('Kullanım Koşulları', <p className="text-justify leading-relaxed font-sans text-chic-text text-sm">Bu servis eğlence ve içgörü amaçlıdır. Sunulan analizler, profesyonel psikolojik, tıbbi veya hukuki tavsiye niteliği taşımaz. Kullanıcılar, uygulama tarafından üretilen içerikleri kendi sorumluluklarında yorumlamalıdır.</p>)} className="hover:text-chic-primary transition-colors">Koşullar</button>
           <button onClick={() => openModal('İletişim & Destek', <ContactForm />)} className="hover:text-chic-primary transition-colors">İletişim</button>
         </div>
-        <p className="text-[10px] text-gray-300">&copy; {new Date().getFullYear()} Vibrio. All rights reserved.</p>
+        <p className="text-[10px] text-gray-300">&copy; {new Date().getFullYear()} Vibrio Inc. All rights reserved.</p>
       </footer>
       {modalContent && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-chic-deep/20 backdrop-blur-sm" onClick={() => setModalContent(null)}>

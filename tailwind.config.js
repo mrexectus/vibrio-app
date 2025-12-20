@@ -1,3 +1,4 @@
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -15,14 +16,14 @@ export default {
       },
       colors: {
         chic: {
-          bg: '#FDFBF7',       // Alabaster White
-          surface: '#FFFFFF',  // Pure White
-          primary: '#D4A373',  // Muted Gold
-          secondary: '#E6CCB2',// Champagne
-          accent: '#9D8189',   // Dusty Mauve
-          deep: '#463F3A',     // Charcoal Grey (Not Black)
-          text: '#5E503F',     // Warm Grey
-          success: '#8A9A5B',  // Sage Green
+          bg: 'var(--chic-bg)',
+          surface: '#FFFFFF',
+          primary: 'var(--chic-primary)',
+          secondary: 'var(--chic-secondary)',
+          accent: 'var(--chic-accent)',
+          deep: 'var(--chic-deep)',
+          text: 'var(--chic-text)',
+          success: 'var(--chic-success)',
         }
       },
       backgroundImage: {
