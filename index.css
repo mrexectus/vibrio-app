@@ -8,232 +8,62 @@
   --chic-accent: #9D8189;
   --chic-deep: #463F3A;
   --chic-text: #5E503F;
-  --chic-success: #8A9A5B;
 }
 
-/* Midnight Theme */
 [data-theme='midnight'] {
   --chic-bg: #0F172A;
   --chic-primary: #94A3B8;
   --chic-accent: #64748B;
   --chic-deep: #F1F5F9;
   --chic-text: #CBD5E1;
-  --chic-success: #2DD4BF;
-}
-
-/* Rose Theme */
-[data-theme='rose'] {
-  --chic-bg: #FFF5F5;
-  --chic-primary: #E5989B;
-  --chic-accent: #B5838D;
-  --chic-deep: #6D597A;
-  --chic-text: #4A3E50;
-  --chic-success: #E5989B;
-}
-
-/* Forest Theme */
-[data-theme='forest'] {
-  --chic-bg: #F0F4F1;
-  --chic-primary: #588157;
-  --chic-accent: #A3B18A;
-  --chic-deep: #344E41;
-  --chic-text: #3A5A40;
-  --chic-success: #588157;
 }
 
 body {
   background-color: var(--chic-bg);
   color: var(--chic-text);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overscroll-behavior-y: none;
-  min-height: 100dvh;
-  transition: background-color 0.5s ease, color 0.5s ease;
+  transition: background-color 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-x: hidden;
+  font-family: 'Quicksand', sans-serif;
 }
 
-.texture-noise {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 50;
-  mix-blend-mode: multiply;
+/* Zen Minimalist Input */
+.zen-input {
+  @apply w-full bg-transparent border-none outline-none text-center font-serif italic text-4xl md:text-6xl text-chic-deep placeholder:opacity-10 transition-all duration-1000 leading-tight py-12;
 }
 
-.ambient-light {
-  position: fixed;
-  top: -50%; left: -50%; right: -50%; bottom: -50%;
-  width: 200%; height: 200%;
-  background: radial-gradient(circle at 50% 50%, rgba(212, 163, 115, 0.05), transparent 60%),
-              radial-gradient(circle at 100% 0%, rgba(219, 173, 173, 0.05), transparent 60%),
-              radial-gradient(circle at 0% 100%, rgba(157, 129, 137, 0.03), transparent 60%);
-  z-index: 0;
-  animation: rotate 120s linear infinite;
-  pointer-events: none;
+/* Revelation Layout */
+.revelation-comment {
+  @apply font-serif text-4xl md:text-6xl text-chic-deep italic leading-[1.1] tracking-tight max-w-4xl mx-auto py-20 animate-reveal;
 }
 
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+/* Luxury Toggle */
+.btn-minimal-toggle {
+  @apply text-[10px] font-bold uppercase tracking-[0.5em] text-chic-deep/20 hover:text-chic-primary transition-all duration-500 py-6;
 }
 
-/* Refined Placeholder Breathing Effect */
-@keyframes placeholderFade {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.7; }
+.glass-nav {
+  @apply fixed top-0 w-full z-50 h-24 flex items-center px-10 justify-between bg-white/20 backdrop-blur-2xl border-b border-chic-deep/5;
 }
 
-/* Idle Pulsing Animation */
-@keyframes neonPulse {
-  0%, 100% { 
-    box-shadow: 0 0 5px rgba(212, 163, 115, 0.1);
-    opacity: 0.9;
-  }
-  50% { 
-    box-shadow: 0 0 20px rgba(212, 163, 115, 0.2);
-    opacity: 1;
-  }
+.minimal-select {
+  @apply bg-transparent border-b border-chic-deep/10 text-[10px] font-bold uppercase tracking-widest py-3 outline-none focus:border-chic-primary transition-all appearance-none text-center cursor-pointer text-chic-deep/60;
 }
 
-/* Enhanced Focus Neon Pulse - Theme Aware */
-@keyframes neonFocusPulse {
-  0%, 100% {
-    box-shadow: 
-      0 0 15px var(--chic-primary), 
-      0 0 30px rgba(212, 163, 115, 0.1), 
-      inset 0 0 8px var(--chic-primary);
-    outline-color: rgba(212, 163, 115, 0.2);
-  }
-  50% {
-    box-shadow: 
-      0 0 25px var(--chic-primary), 
-      0 0 50px rgba(212, 163, 115, 0.3), 
-      inset 0 0 15px var(--chic-primary);
-    outline-color: rgba(212, 163, 115, 0.4);
-  }
+/* Custom Animations */
+@keyframes revealIn {
+  from { opacity: 0; transform: translateY(30px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Enhanced Subtle Animation for Reset Button */
-@keyframes reset-gentle-pulse {
-  0%, 100% { 
-    transform: translateY(0) scale(1) rotate(0deg);
-    box-shadow: 0 0 0 rgba(157, 129, 137, 0);
-  }
-  25% {
-    transform: translateY(-2px) scale(1.03) rotate(0.5deg);
-  }
-  50% { 
-    transform: translateY(-3px) scale(1.05) rotate(0deg);
-    box-shadow: 0 8px 15px rgba(157, 129, 137, 0.2);
-  }
-  75% {
-    transform: translateY(-2px) scale(1.03) rotate(-0.5deg);
-  }
+.animate-reveal {
+  animation: revealIn 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Custom Input Container with Gradient Border */
-.custom-input-container {
-  /* Gradient Border Setup */
-  border: 2px solid transparent !important;
-  border-radius: 12px !important;
-  background-image: linear-gradient(var(--chic-bg), var(--chic-bg)), 
-                    linear-gradient(to right, var(--chic-primary), var(--chic-accent));
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
-  
-  outline: 1px solid transparent;
-  outline-offset: 8px;
-  animation: neonPulse 4s ease-in-out infinite;
-  transition: 
-    outline-offset 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
-    outline-color 0.4s ease, 
-    box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-    background-image 0.5s ease;
-}
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Focused State with Soft Glowing Outline */
-.custom-input-container:focus-within {
-  outline: 3px solid var(--chic-primary);
-  outline-offset: 12px;
-  animation: neonFocusPulse 3s ease-in-out infinite; 
-  background-image: linear-gradient(var(--chic-bg), var(--chic-bg)), 
-                    linear-gradient(to right, var(--chic-primary), var(--chic-primary)); /* Solidify gradient on focus for intensity */
-}
-
-/* Applying the breathing effect to the placeholder */
-.custom-input-container textarea::placeholder {
-  animation: placeholderFade 6s ease-in-out infinite;
-  transition: opacity 0.3s ease;
-}
-
-/* Reset button hover animation */
-.custom-input-container .reset-btn {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.custom-input-container .reset-btn:hover {
-  animation: reset-gentle-pulse 2s ease-in-out infinite;
-  border-color: var(--chic-accent) !important;
-  color: var(--chic-accent) !important;
-  background-color: rgba(157, 129, 137, 0.03);
-}
-
-/* Input stylized corners */
-.input-stylized-frame {
-  position: relative;
-}
-
-.input-stylized-frame::before,
-.input-stylized-frame::after {
-  content: '';
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  border-color: var(--chic-primary);
-  opacity: 0.25;
-  pointer-events: none;
-  transition: opacity 0.3s ease, border-color 0.3s ease;
-  z-index: 10;
-}
-
-.input-stylized-frame::before {
-  top: 15px;
-  left: 15px;
-  border-top-width: 1px;
-  border-left-width: 1px;
-  border-radius: 4px 0 0 0;
-}
-
-.input-stylized-frame::after {
-  bottom: 15px;
-  right: 15px;
-  border-bottom-width: 1px;
-  border-right-width: 1px;
-  border-radius: 0 0 4px 0;
-}
-
-.input-stylized-frame:focus-within::before,
-.input-stylized-frame:focus-within::after {
-  opacity: 0.7;
-  border-color: var(--chic-primary);
-  filter: drop-shadow(0 0 5px var(--chic-primary));
-}
-
-/* Scrollbar Hide */
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
-}
-.scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-.pb-safe {
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-@media print {
-  @page { margin: 0; }
-  body { background: white !important; }
-  .no-print { display: none !important; }
+/* Interactive Hover States */
+.hover-lift {
+  @apply transition-transform duration-500 hover:-translate-y-1;
 }

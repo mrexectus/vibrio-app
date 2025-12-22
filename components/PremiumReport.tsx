@@ -8,66 +8,101 @@ const PremiumReport: React.FC<PremiumReportProps> = ({ content }) => {
     <div className="w-full relative">
        <style>{`
          @media print {
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            @page { margin: 0; }
+            body { margin: 1.6cm; background: white !important; }
             .no-print { display: none !important; }
-            body { background: white !important; }
-            #printable-report { box-shadow: none !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }
+            #printable-report { 
+              box-shadow: none !important; 
+              border: none !important;
+              padding: 0 !important;
+            }
          }
-         /* Smooth typography for reading */
-         .prose p { margin-bottom: 1.5em; }
-         .prose strong { color: #463F3A; font-weight: 700; }
+         #printable-report h2 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 1.5rem; color: #463F3A; }
+         #printable-report h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; border-left: 4px solid #D4A373; padding-left: 1rem; }
+         #printable-report p { margin-bottom: 1rem; line-height: 1.8; color: #5E503F; }
+         #printable-report table { width: 100%; margin: 1.5rem 0; border-collapse: collapse; }
+         #printable-report th { background: #463F3A; color: white; padding: 0.75rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; }
+         #printable-report td { padding: 0.75rem; border: 1px solid #E5E0D8; font-size: 0.875rem; }
+         #printable-report blockquote { border: 1px dashed #D4A373; padding: 1.5rem; background: #FCFBF9; font-style: italic; margin: 2rem 0; }
        `}</style>
+
        <div id="printable-report"
-         className="w-full bg-[#FCFBF9] text-chic-deep p-6 md:p-12 lg:p-16 relative shadow-2xl rounded-sm font-sans text-sm leading-relaxed overflow-visible print:shadow-none print:p-0 transition-all duration-500"
+         className="w-full bg-[#FCFBF9] text-chic-deep p-8 md:p-16 relative shadow-[0_50px_100px_rgba(0,0,0,0.05)] rounded-sm font-sans text-sm leading-relaxed overflow-hidden transition-all duration-700 border border-chic-primary/5"
        >
-         {/* Paper Texture & Noise */}
-         <div className="absolute inset-0 pointer-events-none opacity-[0.04] z-0" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
+         {/* Texture Overlay */}
+         <div className="absolute inset-0 pointer-events-none opacity-[0.03] z-0" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
          
-         {/* Watermark */}
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] border-[20px] border-chic-deep/5 rounded-full pointer-events-none z-0"></div>
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10vw] font-serif font-bold text-chic-deep/5 -rotate-12 pointer-events-none select-none z-0 whitespace-nowrap">
-            CONFIDENTIAL
+         {/* Watermarks */}
+         <div className="absolute top-10 right-10 opacity-10 select-none pointer-events-none uppercase tracking-[0.5em] text-[10px] font-black rotate-90 origin-right">
+            Confidential • Vibrio Intelligence
+         </div>
+         <div className="absolute bottom-20 left-1/2 -translate-x-1/2 opacity-[0.02] pointer-events-none z-0">
+             <div className="text-[25vw] font-serif font-black">V</div>
          </div>
 
-         {/* Header Branding (Visible on Print) */}
-         <div className="relative z-10 flex justify-between items-start border-b-2 border-chic-deep/80 pb-6 mb-10 print:flex">
+         {/* Dossier Header */}
+         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start border-b-[3px] border-chic-deep pb-8 mb-12">
             <div>
-                <h1 className="text-3xl md:text-4xl font-serif font-bold tracking-tight text-chic-deep">VIBRIO</h1>
-                <p className="text-[10px] uppercase tracking-[0.4em] text-chic-deep/60 mt-1 font-medium">Soul Analytics Division</p>
-            </div>
-            <div className="text-right">
-                <div className="w-12 h-12 border border-chic-deep rounded-full flex items-center justify-center">
-                    <span className="font-serif font-bold text-xl">V</span>
+                <div className="flex items-center gap-3 mb-2">
+                    <span className="w-3 h-3 bg-red-600 rounded-full animate-pulse"></span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-chic-deep">Sinastri Dosyası: #VBR-{Math.floor(Math.random()*90000+10000)}</span>
                 </div>
+                <h1 className="text-4xl md:text-5xl font-serif font-bold text-chic-deep tracking-tighter">İlişki Röntgeni</h1>
+                <p className="text-xs text-chic-deep/50 mt-2 font-medium">Bilinçaltı, Arketip ve Karma Analizi Raporu</p>
+            </div>
+            <div className="mt-6 md:mt-0 text-right md:w-48">
+                <p className="text-[9px] font-bold uppercase tracking-widest text-chic-deep/40">Oluşturulma Tarihi</p>
+                <p className="font-serif italic text-lg">{new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
             </div>
          </div>
 
          {/* Content Injection */}
-         <div className="relative z-10"
+         <div className="relative z-10 prose-custom prose-chic"
            dangerouslySetInnerHTML={{ __html: content }} 
          />
          
-         {/* Footer / Signature */}
-         <div className="relative z-10 mt-16 pt-10 border-t border-chic-deep/10 flex flex-col md:flex-row justify-between items-center gap-6 print:flex">
-             <div className="text-center md:text-left">
-                 <p className="font-serif italic text-chic-deep/60 text-lg">"Yıldızlar yolu gösterir, yürümek sana kalmıştır."</p>
-                 <p className="text-[9px] uppercase tracking-widest text-chic-deep/30 mt-2">Vibrio Intelligence System v2.5 • Verified Analysis</p>
+         {/* Footer / Signature Block */}
+         <div className="relative z-10 mt-20 pt-10 border-t border-chic-deep/10 flex flex-col md:flex-row justify-between items-end gap-10">
+             <div className="max-w-md">
+                 <p className="font-serif italic text-chic-deep/70 text-lg leading-snug">"Ruhun karanlık odaları sadece doğru anahtarla açılır. Bu rapor o anahtarın ilk dişlisidir."</p>
+                 <div className="flex gap-4 mt-6">
+                     <div className="w-10 h-10 rounded-full bg-chic-deep/5 border border-chic-deep/10 flex items-center justify-center text-xl">🧿</div>
+                     <div className="w-10 h-10 rounded-full bg-chic-deep/5 border border-chic-deep/10 flex items-center justify-center text-xl">🧬</div>
+                     <div className="w-10 h-10 rounded-full bg-chic-deep/5 border border-chic-deep/10 flex items-center justify-center text-xl">⚖️</div>
+                 </div>
              </div>
-             <div className="w-24 h-24 opacity-80 mix-blend-multiply">
-                 {/* Wax Seal / Stamp Effect using CSS/SVG */}
-                 <svg viewBox="0 0 100 100" className="w-full h-full text-red-900/40 rotate-12">
-                     <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4 2" />
-                     <circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" strokeWidth="1" />
-                     <text x="50" y="55" textAnchor="middle" fontSize="14" fontWeight="bold" fill="currentColor" fontFamily="serif">APPROVED</text>
-                     <text x="50" y="40" textAnchor="middle" fontSize="8" fill="currentColor" fontFamily="sans-serif" letterSpacing="2">CONFIDENTIAL</text>
-                 </svg>
+             <div className="flex flex-col items-end">
+                 <div className="w-32 h-32 opacity-80 mix-blend-multiply transition-transform hover:rotate-6 duration-700">
+                     <svg viewBox="0 0 100 100" className="w-full h-full text-chic-primary/40">
+                         <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3 1" />
+                         <circle cx="50" cy="50" r="35" fill="none" stroke="currentColor" strokeWidth="0.5" />
+                         <text x="50" y="48" textAnchor="middle" fontSize="6" fontWeight="bold" fill="currentColor" letterSpacing="2">VERIFIED BY AI</text>
+                         <text x="50" y="58" textAnchor="middle" fontSize="12" fontWeight="black" fill="currentColor" fontFamily="serif">VIBRIO</text>
+                     </svg>
+                 </div>
+                 <p className="text-[8px] uppercase tracking-widest text-chic-deep/30 mt-2">Bu belge dijital olarak imzalanmıştır.</p>
              </div>
          </div>
        </div>
 
-       <button onClick={() => window.print()} className="mt-8 mx-auto flex items-center gap-3 px-8 py-4 bg-chic-deep text-white hover:bg-chic-deep/90 rounded-xl text-xs uppercase tracking-[0.2em] font-bold transition-all no-print shadow-xl hover:translate-y-[-2px] group">
-          <span className="group-hover:animate-bounce">📥</span> Dosyayı PDF Olarak İndir
-       </button>
+       <div className="flex flex-col md:flex-row gap-4 justify-center mt-12 no-print">
+           <button 
+             onClick={() => window.print()} 
+             className="px-10 py-5 bg-chic-deep text-white hover:bg-black rounded-2xl text-[10px] uppercase tracking-[0.3em] font-bold transition-all shadow-2xl hover:translate-y-[-4px] active:translate-y-0"
+           >
+              📥 PDF Olarak Kaydet (Mühürlü Kopya)
+           </button>
+           <button 
+             onClick={() => {
+                if(navigator.share) {
+                    navigator.share({ title: 'Vibrio Analiz Raporum', text: 'İlişkimin gizli kodlarını çözdüm.', url: window.location.href });
+                }
+             }}
+             className="px-10 py-5 bg-white border border-chic-deep/10 text-chic-deep hover:bg-chic-bg rounded-2xl text-[10px] uppercase tracking-[0.3em] font-bold transition-all shadow-xl"
+           >
+              🔗 Raporu Paylaş
+           </button>
+       </div>
     </div>
   );
 };

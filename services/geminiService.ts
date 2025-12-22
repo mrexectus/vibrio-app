@@ -1,34 +1,7 @@
 
-import { GoogleGenAI, Type, Modality } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { VibrioResponse } from "../types";
 import { sampleReportContent } from "./sampleData";
-
-const compressImage = async (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      const img = new Image();
-      img.src = event.target?.result as string;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 800;
-        const scaleSize = MAX_WIDTH / img.width;
-        const width = scaleSize < 1 ? MAX_WIDTH : img.width;
-        const height = scaleSize < 1 ? img.height * scaleSize : img.height;
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL('image/jpeg', 0.7).split(',')[1]);
-        } else reject(new Error("Canvas context failed"));
-      };
-      img.onerror = (err) => reject(err);
-    };
-    reader.onerror = (err) => reject(err);
-  });
-};
 
 export const analyzeRelationship = async (
   text: string,
@@ -40,24 +13,39 @@ export const analyzeRelationship = async (
   
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
 
-  // 1. ANALYSIS STEP (Gemini 3 Pro with Thinking)
-  const reportSystemInstruction = `
-    ROL: Sen "Vibrio" isimli elit bir İlişki Analistisin. Jungiyen Psikoloji, Gottman Metodu ve Astroloji uzmanısın.
-    GÖREV: Kullanıcının girdiği verileri analiz et ve JSON formatında bir rapor döndür. 
-    İÇERİK: "premium_report_content" alanı, Tailwind CSS ile tasarlanmış, büyüleyici ve profesyonel bir HTML raporu olmalıdır.
-    TOOL: Güncel ilişki trendleri ve toksisite belirtileri için googleSearch kullanabilirsin.
+  const systemInstruction = `
+    ROL: Sen 'Vibrio' isimli, dünyanın en gelişmiş İlişki ve Karakter Analiz Motorusun. 
+    KİŞİLİK: Analitik, elit bir dille konuşan, direkt, Jungiyen psikoloji ve Gottman metodu uzmanı.
+    
+    ANALİZ HEDEFİ: Kullanıcıya 49 TL ödediğine "değdiğini" hissettirecek kadar derin, sarsıcı ve nokta atışı bir rapor sunmak.
+    
+    RAPOR İÇERİĞİ (premium_report_content) İÇİN KURALLAR:
+    1. HTML/Tailwind CSS kullanarak lüks bir "Klinik Dosya" (Confidential Dossier) tasarımı oluştur.
+    2. BÖLÜMLER: 
+       - 'Bilinçaltı Dinamikleri': Kullanıcının yazdığı metinden alıntılar yaparak (Örn: "Cümlendeki '...' ifadesi aslında senin falan korkunu yansıtıyor") analiz et.
+       - 'Gölge Karakterler': İlişkinin karanlıkta kalan, konuşulmayan kısımlarını (Manipülasyon, pasif-agresiflik vb.) cesurca yaz.
+       - 'Kozmik Matris': Burçların sadece güneş burcu değil, element ve nitelik uyumlarını felsefi bir dille anlat.
+       - 'Eylem Planı': İlişkiyi dönüştürecek 3 adet elit ve pratik "İletişim Ritüeli" öner.
+    3. DİL: Asla "falcı" gibi konuşma. "Veriler şunu gösteriyor", "Psikolojik projeksiyonun sonucu olarak" gibi bilimsel/entelektüel bir ton kullan.
+    4. GÖRSEL YAPI: Tablolar, vurgulu bloklar (blockquote) ve grid yapılar kullan.
   `;
 
-  const statusContext = relationshipStatus ? `İlişki Durumu: ${relationshipStatus}` : "";
-  const analysisPrompt = `Danışan: (${userZodiac}), Partner: (${partnerZodiac}). ${statusContext}. Not: "${text}"`;
+  const prompt = `
+    KULLANICI METNİ: "${text}"
+    ASTROLOJİ: ${userZodiac} (Sen) - ${partnerZodiac} (Partner)
+    İLİŞKİ DURUMU: ${relationshipStatus}
+    
+    ANALİZ BAŞLASIN. Unutma, kullanıcıyı sarsacak kadar gerçekçi ve her kelimesi ona özel olmalı.
+  `;
 
   try {
-    const analysisResponse = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview',
-      contents: [{ parts: [{ text: analysisPrompt }] }],
+    const response = await ai.models.generateContent({
+      model: "gemini-3-pro-preview",
+      contents: [{ parts: [{ text: prompt }] }],
       config: {
-        systemInstruction: reportSystemInstruction,
-        thinkingConfig: { thinkingBudget: 4000 },
+        systemInstruction,
+        temperature: 1.0,
+        thinkingConfig: { thinkingBudget: 32768 },
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -78,53 +66,36 @@ export const analyzeRelationship = async (
             premium_report_content: { type: Type.STRING },
           },
           required: ["vibrio_score", "free_comment", "metrics", "premium_report_content"],
-        },
-        tools: [{ googleSearch: {} }]
-      },
+        }
+      }
     });
 
-    const reportData = JSON.parse(analysisResponse.text || '{}');
+    const data = JSON.parse(response.text || '{}');
 
-    // 2. IMAGE GENERATION STEP (Future Projection)
+    // Görsel Üretimi (Vibrio Style)
     let futureImageUrl = "";
     try {
-      const imagePrompt = `A hyper-realistic cinematic portrait of a couple in their 50s, looking happy and wise, 20 years from now. Minimalist, ethereal lighting, high-end photography style. Based on a relationship with vibes: ${reportData.free_comment}`;
-      
-      const imageParts: any[] = [{ text: imagePrompt }];
-      if (imageFile) {
-        const base64 = await compressImage(imageFile);
-        imageParts.push({ inlineData: { data: base64, mimeType: 'image/jpeg' } });
-      }
-
-      const imageResponse = await ai.models.generateContent({
+      const imgRes = await ai.models.generateContent({
         model: 'gemini-2.5-flash-image',
-        contents: [{ parts: imageParts }],
-        config: {
-          imageConfig: { aspectRatio: "4:3" }
-        }
+        contents: [{ parts: [{ text: `A cinematic high-end vertical photography of a couple from a future timeline, soft ambient lighting, emotional depth, 4k resolution. Based on: ${data.free_comment}` }] }],
+        config: { imageConfig: { aspectRatio: "9:16" } }
       });
-
-      for (const part of imageResponse.candidates?.[0]?.content?.parts || []) {
-        if (part.inlineData) {
-          futureImageUrl = `data:image/png;base64,${part.inlineData.data}`;
-          break;
-        }
-      }
-    } catch (imgErr) {
-      console.warn("Future projection image failed:", imgErr);
+      const part = imgRes.candidates?.[0]?.content?.parts.find(p => p.inlineData);
+      if (part?.inlineData) futureImageUrl = `data:image/png;base64,${part.inlineData.data}`;
+    } catch (e) {
+      console.warn("Visual generation skipped.");
     }
 
-    return { ...reportData, futureImageUrl };
+    return { ...data, futureImageUrl };
 
-  } catch (error: any) {
-    console.error("Vibrio Engine Error:", error);
-    // Fallback to sample for demo purposes
+  } catch (error) {
+    console.error("Critical Engine Failure:", error);
     return {
-      vibrio_score: 75,
-      free_comment: "Sistem yoğunluğu nedeniyle demo modunda analiz yapıldı.",
-      metrics: { trust: 70, passion: 80, communication: 60, attachment_style: "Güvenli", conflict_style: "Dengeli" },
+      vibrio_score: 50,
+      free_comment: "Evrensel bir senkronizasyon hatası... Ruhun derinliklerine şu an ulaşılamıyor.",
+      metrics: { trust: 50, passion: 50, communication: 50, attachment_style: "Analiz Ediliyor", conflict_style: "Stabilize Ediliyor" },
       premium_report_content: sampleReportContent,
-      futureImageUrl: "https://images.unsplash.com/photo-1526662097318-6c0b39f4007f?q=80&w=600&auto=format&fit=crop"
+      futureImageUrl: "https://images.unsplash.com/photo-1518199266791-7399a9a3ec58?q=80&w=800"
     };
   }
 };
